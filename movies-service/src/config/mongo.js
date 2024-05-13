@@ -1,32 +1,22 @@
-const MongoClient = require('mongodb')
+const { MongoClient } = require("mongodb");
 
 const getMongoURL = (options) => {
-  const url = options.servers
-    .reduce((prev, cur) => prev + cur + ',', 'mongodb://')
+  const url = options.servers.reduce(
+    (prev, cur) => prev + cur + ",",
+    `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@`
+  );
 
-  return `${url.substr(0, url.length - 1)}/${options.db}`
-}
+  return `${url.substr(0, url.length - 1)}`;
+};
 
 const connect = (options, mediator) => {
-  mediator.once('boot.ready', () => {
-    MongoClient.connect(
-      getMongoURL(options), {
-        db: options.dbParameters(),
-        server: options.serverParameters(),
-        replset: options.replsetParameters(options.repl)
-      }, (err, db) => {
-        if (err) {
-          mediator.emit('db.error', err)
-        }
+  mediator.once("boot.ready", async () => {
+    const client = await new MongoClient(getMongoURL(options));
+    client
+      .connect()
+      .then(() => mediator.emit("db.ready", client.db(process.env.DB)))
+      .catch((err) => mediator.emit("db.error", err));
+  });
+};
 
-        db.admin().authenticate(options.user, options.pass, (err, result) => {
-          if (err) {
-            mediator.emit('db.error', err)
-          }
-          mediator.emit('db.ready', db)
-        })
-      })
-  })
-}
-
-module.exports = Object.assign({}, {connect})
+module.exports = Object.assign({}, { connect });
