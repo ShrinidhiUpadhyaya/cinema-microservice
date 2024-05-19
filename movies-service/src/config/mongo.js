@@ -6,7 +6,7 @@ const getMongoURL = (options) => {
     `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@`
   );
 
-  return `${url.substr(0, url.length - 1)}`;
+  return `mongodb://${process.env.DB_SERVERS}`;
 };
 
 const connect = (options, mediator) => {

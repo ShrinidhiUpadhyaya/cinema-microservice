@@ -43,6 +43,9 @@
     "helmet": "^3.4.0",
     "http-status": "^0.2.5",
     "mongodb": "^6.6.1",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "winston": "^3.13.0",
+    "winston-logstash": "^1.2.1",
+    "winston-tcp": "^3.0.0"
   }
 }

@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+data:
+  logstash.conf: |
+    input {
+      tcp {
+        port => 5044
+        codec => json_lines
+      }
+    }
+
+    filter {
+      json { source => "message" }
+      #we need level field in a numeric format
+      mutate {
+        gsub => [
+          "level", "info", 6,
+          "level", "error", 3
+        ]
+      }
+      mutate {
+        convert => { "level" => "integer" }
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch:9200"]
+        user => "elastic"
+        password => "changeme"
+        index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+      }
+      stdout { codec => rubydebug }
+    }
+
+  logstash.yml: |
+    http.host: 0.0.0.0
+    node.name: logstash
