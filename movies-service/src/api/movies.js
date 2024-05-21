@@ -1,10 +1,13 @@
 "use strict";
 const status = require("http-status");
+const logger = require("../utils/logger");
 
 module.exports = (app, options) => {
   const { repo } = options;
 
   app.get("/movies", (req, res, next) => {
+    logger.info("Get Movies");
+
     repo
       .getAllMovies()
       .then((movies) => {

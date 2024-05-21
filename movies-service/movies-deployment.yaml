@@ -7,10 +7,9 @@ spec:
     app: movies-service
   ports:
     - protocol: TCP
-      port: 80
+      port: 3001
       targetPort: 3001
   type: LoadBalancer
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -28,7 +27,7 @@ spec:
     spec:
       containers:
         - name: movies-service
-          image: movies-service:v1.0.4
+          image: movies-service:v1.0.16
           imagePullPolicy: Never
           ports:
             - containerPort: 3001
@@ -39,3 +38,5 @@ spec:
               value: "admin"
             - name: DB_PASS
               value: "password"
+            - name: PORT
+              value: "3001"
