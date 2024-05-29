@@ -1,0 +1,7 @@
+/movies-service/node_modules
+/cinema-catalog-service/node_modules
+/booking-service/node_modules
+
+package-lock.json
+movies-service/npm-shrinkwrap.json
+.env
