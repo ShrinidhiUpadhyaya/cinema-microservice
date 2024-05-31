@@ -1,3 +1,3 @@
-const di = require('./di')
+const di = require("./di");
 
-module.exports = Object.assign({}, di)
+module.exports = Object.assign({}, di);

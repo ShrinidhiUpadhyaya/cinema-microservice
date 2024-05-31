@@ -6,7 +6,7 @@ const paymentSchema = (joi) => ({
   exp_month: joi.number(),
   exp_year: joi.number(),
   amount: joi.number(),
-  description: joi.string()
-})
+  description: joi.string(),
+});
 
-module.exports = paymentSchema
+module.exports = paymentSchema;
