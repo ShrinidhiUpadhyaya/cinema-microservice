@@ -2,6 +2,7 @@
 /cinema-catalog-service/node_modules
 /booking-service/node_modules
 /payment-service/node_modules
+/notification-service/node_modules
 
 package-lock.json
 .env

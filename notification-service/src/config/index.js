@@ -1,7 +1,7 @@
-const {smtpSettings, serverSettings} = require('./config')
-const {initDI} = require('./di')
-const models = require('../models')
+const { smtpSettings, serverSettings } = require("./config");
+const { initDI } = require("./di");
+const models = require("../models");
 
-const init = initDI.bind(null, {serverSettings, smtpSettings, models})
+const init = initDI.bind(null, { serverSettings, smtpSettings, models });
 
-module.exports = Object.assign({}, {init})
+module.exports = Object.assign({}, { init });

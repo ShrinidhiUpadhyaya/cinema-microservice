@@ -26,7 +26,8 @@
     "microservice"
   ],
   "devDependencies": {
-    "eslint": "^3.13.1",
+    "dotenv": "^16.4.5",
+    "eslint": "^3.19.0",
     "mocha": "^3.2.0",
     "nodejs-dashboard": "^0.3.0",
     "should": "^11.1.2",

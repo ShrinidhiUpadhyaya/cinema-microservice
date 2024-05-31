@@ -1,43 +1,44 @@
 /* eslint-env mocha */
-const { createContainer, asValue } = require('awilix')
-const nodemailer = require('nodemailer')
-const smtpTransport = require('nodemailer-smtp-transport')
-const should = require('should')
-const request = require('supertest')
-const server = require('../server/server')
-const models = require('../models')
-const {smtpSettings} = require('../config/config')
+const { createContainer, asValue } = require("awilix");
+const nodemailer = require("nodemailer");
+const smtpTransport = require("nodemailer-smtp-transport");
+const should = require("should");
+const request = require("supertest");
+const server = require("../server/server");
+const models = require("../models");
+const { smtpSettings } = require("../config/config");
 
-describe('Booking API', () => {
-  let app = null
+describe("Booking API", () => {
+  let app = null;
 
   const serverSettings = {
-    port: 3000
-  }
+    port: 3000,
+  };
 
-  const container = createContainer()
+  const container = createContainer();
 
   container.register({
     validate: asValue(models.validate),
     serverSettings: asValue(serverSettings),
     smtpSettings: asValue(smtpSettings),
     nodemailer: asValue(nodemailer),
-    smtpTransport: asValue(smtpTransport)
-  })
+    smtpTransport: asValue(smtpTransport),
+  });
 
   let _testRepo = {
-    sendEmail ({container}, payload) {
+    sendEmail({ container }, payload) {
       return new Promise((resolve, reject) => {
-        const {smtpSettings, smtpTransport, nodemailer} = container.cradle
+        const { smtpSettings, smtpTransport, nodemailer } = container.cradle;
 
         const transporter = nodemailer.createTransport(
           smtpTransport({
             service: smtpSettings.service,
             auth: {
               user: smtpSettings.user,
-              pass: smtpSettings.pass
-            }
-          }))
+              pass: smtpSettings.pass,
+            },
+          })
+        );
 
         const mailOptions = {
           from: '"Do Not Reply, Cinemas Company 👥" <no-replay@cinemas.com>',
@@ -56,67 +57,66 @@ describe('Booking API', () => {
               <h4>number of order: <span>${payload.orderId}</span> </h4>
 
               <h3>Cinemas Microserivce 2017, Enjoy your movie 🍿🎥!</h3>
-            `
-        }
+            `,
+        };
 
         transporter.sendMail(mailOptions, (err, info) => {
           if (err) {
-            reject(new Error('An error occured sending an email, err:' + err))
+            reject(new Error("An error occured sending an email, err:" + err));
           }
-          transporter.close()
-          resolve(info)
-        })
-      })
-    }
-  }
+          transporter.close();
+          resolve(info);
+        });
+      });
+    },
+  };
 
-  const testRepo = {}
+  const testRepo = {};
 
-  testRepo.sendEmail = _testRepo.sendEmail.bind(null, {container})
+  testRepo.sendEmail = _testRepo.sendEmail.bind(null, { container });
 
-  container.registerValue({repo: testRepo})
+  container.registerValue({ repo: testRepo });
 
   beforeEach(() => {
-    return server.start(container)
-      .then(serv => {
-        app = serv
-      })
-  })
+    return server.start(container).then((serv) => {
+      app = serv;
+    });
+  });
 
   afterEach(() => {
-    app.close()
-    app = null
-  })
+    app.close();
+    app = null;
+  });
 
-  it('can make a booking and return the ticket(s)', (done) => {
+  it("can make a booking and return the ticket(s)", (done) => {
     const payload = {
-      city: 'Morelia',
-      userType: 'loyal',
+      city: "Morelia",
+      userType: "loyal",
       totalAmount: 71,
       cinema: {
-        name: 'Plaza Morelia',
-        room: '1',
-        seats: '53, 54'
+        name: "Plaza Morelia",
+        room: "1",
+        seats: "53, 54",
       },
       movie: {
-        title: 'Assasins Creed',
-        format: 'IMAX',
-        schedule: new Date()
+        title: "Assasins Creed",
+        format: "IMAX",
+        schedule: new Date(),
       },
-      orderId: '1aa90cx',
-      description: 'some description',
+      orderId: "1aa90cx",
+      description: "some description",
       user: {
-        name: 'Cristian Ramirez',
-        email: 'cristiano.rosetti@gmail.com'
-      }
-    }
+        name: "Cristian Ramirez",
+        email: "cristiano.rosetti@gmail.com",
+      },
+    };
 
     request(app)
-      .post('/notification/sendEmail')
-      .send({payload})
+      .post("/notification/sendEmail")
+      .send({ payload })
       .expect((res) => {
-        should.ok(res.body)
+        should.ok(res.body);
       })
-      .expect(200, done)
-  })
-})
+      .expect(200, done);
+  });
+});
