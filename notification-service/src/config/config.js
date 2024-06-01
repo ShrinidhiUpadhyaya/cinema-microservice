@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const serverSettings = {
   port: process.env.PORT || 3000,
   ssl: require("./ssl"),
