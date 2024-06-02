@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-init-script
+data:
+  init.sh: |
+    # mongoimport --host mongo --db movies --collection movies --file /data/mockData/movies.json --jsonArray --username root --password password
