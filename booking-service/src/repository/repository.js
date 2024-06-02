@@ -20,14 +20,14 @@ const repository = (container) => {
         },
       };
 
-      db.collection("booking").insertOne(payload, (err, booked) => {
-        if (err) {
-          reject(
-            new Error("An error occuered registring a user booking, err:" + err)
-          );
-        }
+      try {
+        db.collection("booking").insertOne(payload);
         resolve(payload);
-      });
+      } catch {
+        reject(
+          new Error("An error occuered registring a user booking, err:" + err)
+        );
+      }
     });
   };
 
@@ -37,12 +37,15 @@ const repository = (container) => {
         orderId: paid.charge.id,
         description: paid.description,
       });
-      db.collection("tickets").insertOne(payload, (err, ticket) => {
-        if (err) {
-          reject(new Error("an error occured registring a ticket, err:" + err));
-        }
+
+      try {
+        db.collection("tickets").insertOne(payload);
         resolve(payload);
-      });
+      } catch {
+        reject(
+          reject(new Error("an error occured registring a ticket, err:" + err))
+        );
+      }
     });
   };
 
