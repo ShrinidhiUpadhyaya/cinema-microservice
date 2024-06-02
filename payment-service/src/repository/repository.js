@@ -3,36 +3,27 @@ const repository = (container) => {
   const { database: db } = container.cradle;
 
   const makePurchase = (payment) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const { stripe } = container.cradle;
-      stripe.charges.create(
-        {
+      try {
+        const charge = await stripe.paymentIntents.create({
           amount: Math.ceil(payment.amount * 100),
           currency: payment.currency,
-          source: {
-            number: payment.number,
-            cvc: payment.cvc,
-            exp_month: payment.exp_month,
-            exp_year: payment.exp_year,
-          },
-          description: payment.description,
-        },
-        (err, charge) => {
-          if (err && err.type === "StripeCardError") {
-            reject(
-              new Error(
-                "An error occuered procesing payment with stripe, err: " + err
-              )
-            );
-          } else {
-            const paid = Object.assign(
-              {},
-              { user: payment.userName, amount: payment.amount, charge }
-            );
-            resolve(paid);
-          }
-        }
-      );
+        });
+
+        const paid = Object.assign(
+          {},
+          { user: payment.userName, amount: payment.amount, charge }
+        );
+
+        resolve(paid);
+      } catch (err) {
+        reject(
+          new Error(
+            "An error occuered procesing payment with stripe, err: " + err
+          )
+        );
+      }
     });
   };
 
@@ -40,16 +31,16 @@ const repository = (container) => {
     return new Promise((resolve, reject) => {
       makePurchase(payment)
         .then((paid) => {
-          db.collection("payments").insertOne(paid, (err, result) => {
-            if (err) {
-              reject(
-                new Error(
-                  "an error occuered registring payment at db, err:" + err
-                )
-              );
-            }
+          try {
+            db.collection("payments").insertOne(paid);
             resolve(paid);
-          });
+          } catch {
+            reject(
+              new Error(
+                "an error occuered registring payment at db, err:" + err
+              )
+            );
+          }
         })
         .catch((err) => reject(err));
     });
