@@ -3,16 +3,23 @@ const status = require("http-status");
 
 module.exports = ({ repo }, app) => {
   app.post("/notification/sendEmail", (req, res, next) => {
-    const { validate } = req.container.cradle;
+    console.log("/notification/sendEmail");
 
-    validate(req.body.payload, "notification")
-      .then((payload) => {
-        return repo.sendEmail(payload);
-      })
-      .then((ok) => {
-        res.status(status.OK).json({ msg: "ok" });
-      })
-      .catch(next);
+    // ****Temporary
+    const { validate } = req.container.cradle;
+    res.status(status.OK).json({ msg: "ok" });
+
+    // validate(req.body.payload, "notification")
+    //   .then((payload) => {
+    //     console.log("Payload", payload);
+    //     return repo.sendEmail(payload);
+    //   })
+    //   .then((ok) => {
+    //     console.log("Ok");
+
+    //     res.status(status.OK).json({ msg: "ok" });
+    //   })
+    //   .catch(next);
   });
 
   app.post("/notification/sendSMS", (req, res, next) => {
