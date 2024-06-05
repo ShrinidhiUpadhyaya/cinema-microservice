@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+spec:
+  selector:
+    app: payment-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3001
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+      - name: payment-service
+        image: payment-service:v1.0.1
+        ports:
+        - containerPort: 3001
+        imagePullPolicy: Never
+        env:
+        - name: DB_SERVERS
+          value: "mongodb-service:27017"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-root-username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-root-password
+        - name: PORT
+          value: "3001"
+        - name: STRIPE_SECRET
+          value: "sk_test_51PMT2AP5AkwyiGFaJ2dAZUr2sBus8N2KrNjYwgGt4hrnYWWh1vkr0fQtUCEPXEM68nlMPdQLUrgA1PZOTt0JajWm00UdZ3AuW7"
+        - name: STRIPE_PUBLIC
+          value: "pk_test_51PMT2AP5AkwyiGFam5qqmNtdHarUsue9X6W1KhzzWKME94UpJ5w1NCrIMhzT5h690iAd9sv06MSfQHtizP5UJhc6008OPSlYgq"

@@ -4,7 +4,7 @@ process.env.NODE_TLS_ACCEPT_UNTRUSTED_CERTIFICATES_THIS_IS_INSECURE = "1";
 
 module.exports = (paymentOrder) => {
   return new Promise((resolve, reject) => {
-    supertest(process.env.PAYMENT_SERVICE)
+    supertest(process.env.NGINX_SERVICE)
       .post("/payment/makePurchase")
       .send({ paymentOrder })
       .end((err, res) => {
