@@ -1,7 +1,11 @@
 "use strict";
 const status = require("http-status");
+const { logger, errorLogger, init } = require("../config/logger");
 
 module.exports = ({ repo }, app) => {
+  init("booking-service");
+  app.use(logger);
+
   app.post("/booking", (req, res, next) => {
     const validate = req.container.cradle.validate;
     const paymentService = req.container.resolve("paymentService");
@@ -63,4 +67,6 @@ module.exports = ({ repo }, app) => {
       })
       .catch(next);
   });
+
+  app.use(errorLogger);
 };
