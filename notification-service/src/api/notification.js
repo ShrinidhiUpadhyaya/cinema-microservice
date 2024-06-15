@@ -1,7 +1,11 @@
 "use strict";
 const status = require("http-status");
+const { logger, errorLogger, init } = require("../config/logger");
 
 module.exports = ({ repo }, app) => {
+  init("notification-service");
+  app.use(logger);
+
   app.post("/notification/sendEmail", (req, res, next) => {
     console.log("/notification/sendEmail");
 
@@ -34,4 +38,6 @@ module.exports = ({ repo }, app) => {
       })
       .catch(next);
   });
+
+  app.use(errorLogger);
 };
