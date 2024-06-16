@@ -1,8 +1,14 @@
 "use strict";
+
+require("../config/instrument");
+
 const status = require("http-status");
 const { apiLogger, apiErrorLogger } = require("../config/logger");
+const Sentry = require("@sentry/node");
 
 module.exports = ({ repo }, app) => {
+  Sentry.setupExpressErrorHandler(app);
+
   app.use(apiLogger);
 
   app.post("/booking", (req, res, next) => {
