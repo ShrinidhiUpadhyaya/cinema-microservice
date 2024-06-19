@@ -1,4 +1,7 @@
 "use strict";
+
+require("../config/instrument");
+
 const status = require("http-status");
 const { logger, errorLogger, init } = require("../config/logger");
 

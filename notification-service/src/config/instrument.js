@@ -8,10 +8,6 @@ Sentry.init({
     nodeProfilingIntegration(),
     Browser.browserTracingIntegration(),
   ],
-
   tracesSampleRate: 1.0,
-
   profilesSampleRate: 1.0,
-
-  tracePropagationTargets: ["http://nginx-service/"],
 });

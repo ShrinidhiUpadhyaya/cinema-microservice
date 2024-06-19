@@ -36,6 +36,10 @@
     "supertest": "^2.0.1"
   },
   "dependencies": {
+    "@sentry/browser": "^8.9.2",
+    "@sentry/cli": "^2.32.1",
+    "@sentry/node": "^8.9.2",
+    "@sentry/profiling-node": "^8.9.2",
     "awilix": "^2.2.2",
     "body-parser": "^1.16.0",
     "cors": "^2.8.1",
