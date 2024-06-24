@@ -1,17 +1,29 @@
-const Sentry = require("@sentry/node");
-const { nodeProfilingIntegration } = require("@sentry/profiling-node");
-const Browser = require("@sentry/browser");
+const { NodeSDK } = require("@opentelemetry/sdk-node");
+const { ConsoleSpanExporter } = require("@opentelemetry/sdk-trace-node");
+const {
+  getNodeAutoInstrumentations,
+} = require("@opentelemetry/auto-instrumentations-node");
+const {
+  PeriodicExportingMetricReader,
+  ConsoleMetricExporter,
+} = require("@opentelemetry/sdk-metrics");
+// const {
+//   OTLPTraceExporter,
+// } = require("@opentelemetry/exporter-trace-otlp-proto");
 
-Sentry.init({
-  dsn: "ADD_YOUR_DSN",
-  integrations: [
-    nodeProfilingIntegration(),
-    Browser.browserTracingIntegration(),
-  ],
+const {
+  OTLPTraceExporter,
+} = require("@opentelemetry/exporter-trace-otlp-grpc");
 
-  tracesSampleRate: 1.0,
-
-  profilesSampleRate: 1.0,
-
-  tracePropagationTargets: ["http://nginx-service/"],
+const sdk = new NodeSDK({
+  traceExporter: new OTLPTraceExporter({
+    url: "grpc://otel-collector:4317",
+    headers: {},
+  }),
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new ConsoleMetricExporter(),
+  }),
+  instrumentations: [getNodeAutoInstrumentations()],
 });
+
+sdk.start();
