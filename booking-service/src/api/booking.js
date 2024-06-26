@@ -1,16 +1,8 @@
 "use strict";
-
 require("../config/instrument");
-
 const status = require("http-status");
-const { apiLogger, apiErrorLogger } = require("../config/logger");
-const Sentry = require("@sentry/node");
 
 module.exports = ({ repo }, app) => {
-  Sentry.setupExpressErrorHandler(app);
-
-  app.use(apiLogger);
-
   app.post("/booking", (req, res, next) => {
     const validate = req.container.cradle.validate;
     const paymentService = req.container.resolve("paymentService");
@@ -30,9 +22,9 @@ module.exports = ({ repo }, app) => {
           exp_year: user.creditCard.exp_year,
           amount: booking.totalAmount,
           description: `
-          Tickect(s) for movie ${booking.movie},
-          with seat(s) ${booking.seats.toString()}
-          at time ${booking.schedule}`,
+              Tickect(s) for movie ${booking.movie},
+              with seat(s) ${booking.seats.toString()}
+              at time ${booking.schedule}`,
         };
 
         return Promise.all([
@@ -72,6 +64,4 @@ module.exports = ({ repo }, app) => {
       })
       .catch(next);
   });
-
-  app.use(apiErrorLogger);
 };

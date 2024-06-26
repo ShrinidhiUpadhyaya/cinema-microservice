@@ -1,3 +1,5 @@
+// ****Auto Instrumentation****
+
 const { NodeSDK } = require("@opentelemetry/sdk-node");
 const { ConsoleSpanExporter } = require("@opentelemetry/sdk-trace-node");
 const {
@@ -7,13 +9,18 @@ const {
   PeriodicExportingMetricReader,
   ConsoleMetricExporter,
 } = require("@opentelemetry/sdk-metrics");
+
+const {
+  OTLPTraceExporter,
+} = require("@opentelemetry/exporter-trace-otlp-http");
+
 // const {
 //   OTLPTraceExporter,
 // } = require("@opentelemetry/exporter-trace-otlp-proto");
 
-const {
-  OTLPTraceExporter,
-} = require("@opentelemetry/exporter-trace-otlp-grpc");
+// const {
+//   OTLPTraceExporter,
+// } = require("@opentelemetry/exporter-trace-otlp-grpc");
 
 const sdk = new NodeSDK({
   traceExporter: new OTLPTraceExporter({

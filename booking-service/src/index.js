@@ -1,14 +1,17 @@
 "use strict";
+require("./config/instrument");
+
 const { EventEmitter } = require("events");
 const server = require("./server/server");
 const repository = require("./repository/repository");
 const di = require("./config");
 const mediator = new EventEmitter();
-const logger = require("./config/logger");
 
-logger.init({
-  name: "booking-service",
-  description: "a service for booking cinema tickets",
+var apm = require("elastic-apm-node").start({
+  serviceName: "",
+  secretToken: "",
+  apiKey: "",
+  serverUrl: "http://apm-server:8200",
 });
 
 mediator.on("di.ready", (container) => {
@@ -20,9 +23,6 @@ mediator.on("di.ready", (container) => {
       return server.start(container);
     })
     .then((app) => {
-      logger.logger.info(
-        `Server started succesfully with filebeat, running on port: ${container.cradle.serverSettings.port} `
-      );
       app.on("close", () => {
         container.resolve("repo").disconnect();
       });
