@@ -1,8 +1,9 @@
 const os = require("os");
 const logger = require("pino")({
-  level: "debug",
+  level: "info",
   base: {
     application: "booking-service",
+    version: "v1.0.1",
     environment: "TEST",
     pid: process.pid,
     hostname: os.hostname(),

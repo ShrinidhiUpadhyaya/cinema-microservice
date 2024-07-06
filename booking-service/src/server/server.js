@@ -43,13 +43,6 @@ const start = (container) => {
     const api = _api.bind(null, { repo });
     api(app);
 
-    logger.info(
-      {
-        port: port,
-      },
-      "Application Startup"
-    );
-
     const server = app.listen(port, () => resolve(server));
   });
 };
