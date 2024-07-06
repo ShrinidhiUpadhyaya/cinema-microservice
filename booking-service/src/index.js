@@ -17,6 +17,7 @@ mediator.on("di.ready", (container) => {
     })
     .then((app) => {
       app.on("close", () => {
+        logger.info("close");
         container.resolve("repo").disconnect();
       });
     });

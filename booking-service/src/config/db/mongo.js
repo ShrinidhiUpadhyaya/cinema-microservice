@@ -1,4 +1,5 @@
 const { MongoClient } = require("mongodb");
+const logger = require("../logger");
 
 const getMongoURL = (options) => {
   const url = options.servers.reduce(
@@ -25,10 +26,27 @@ const connect = (options, mediator) => {
       getMongoURL(options),
       getMongoAuthOptions(options)
     );
+
+    logger.info(
+      {
+        options: options,
+        mongoURL: getMongoURL(options),
+        mongoAuthOptions: getMongoAuthOptions(options),
+      },
+      "db.connect"
+    );
     client
       .connect()
       .then(() => mediator.emit("db.ready", client.db(process.env.DB)))
-      .catch((err) => mediator.emit("db.error", err));
+      .catch((err) => {
+        logger.error(
+          {
+            reason: err,
+          },
+          "db.error"
+        );
+        mediator.emit("db.error", err);
+      });
   });
 };
 

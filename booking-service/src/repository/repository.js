@@ -1,4 +1,7 @@
 "use strict";
+
+const logger = require("../config/logger");
+
 const repository = (container) => {
   const { database: db } = container.cradle;
 
@@ -66,6 +69,7 @@ const repository = (container) => {
   };
 
   const disconnect = () => {
+    logger.info("db.disconnect");
     db.close();
   };
 
@@ -79,7 +83,10 @@ const repository = (container) => {
 
 const connect = (container) => {
   return new Promise((resolve, reject) => {
+    logger.info(container);
+
     if (!container.resolve("database")) {
+      logger.error("connection db not supplied!");
       reject(new Error("connection db not supplied!"));
     }
     resolve(repository(container));

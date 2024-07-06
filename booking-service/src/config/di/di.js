@@ -1,4 +1,5 @@
 const { createContainer, asValue } = require("awilix");
+const logger = require("../logger");
 
 function initDI(
   { serverSettings, dbSettings, database, models, services },
@@ -19,6 +20,17 @@ function initDI(
         paymentService: asValue(services.paymentService),
         notificationService: asValue(services.notificationService),
       });
+
+      logger.info(
+        {
+          serverSettings: serverSettings,
+          dbSettings: dbSettings,
+          database: database,
+          models: models,
+          services: services,
+        },
+        "configuration settings"
+      );
 
       mediator.emit("di.ready", container);
     });
