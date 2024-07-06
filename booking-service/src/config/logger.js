@@ -1,10 +1,10 @@
 const os = require("os");
 const logger = require("pino")({
-  level: "info",
+  level: process.env.LOG_LEVEL || "info",
   base: {
-    application: "booking-service",
-    version: "v1.0.1",
-    environment: "TEST",
+    application: process.env.LOG_APPLICATION || null,
+    version: process.env.LOG_VERSION || null,
+    environment: process.env.LOG_ENVIRONMENT || null,
     pid: process.pid,
     hostname: os.hostname(),
   },
