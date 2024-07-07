@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+    - type: log
+      enabled: true
+      paths:
+        - /var/log/app.log
+      scan_frequency: 10s
+      close_inactive: 5m
+      ignore_older: 24h
+      clean_inactive: 72h
+      fields:
+      tag: count.format1
+      fields_under_root: true
+
+    output.logstash:
+      hosts: ["logstash-service:5044"]
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+spec:
+  selector:
+    app: catalog-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3000
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-service
+  template:
+    metadata:
+      labels:
+        app: catalog-service
+    spec:
+      containers:
+      - name: catalog-service
+        image: catalog-service:v1.0.1
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_SERVERS
+          value: "mongodb-service:27017"
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-root-username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: mongo-root-password
+        - name: PORT
+          value: "3000"
+        - name: NGINX_SERVICE
+          value: "http://nginx-service"
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+      - name: filebeat
+        image: docker.elastic.co/beats/filebeat:8.13.4
+        args: ["-c", "/etc/filebeat.yml", "-e"]
+        volumeMounts:
+        - name: config
+          mountPath: /etc/filebeat.yml
+          subPath: filebeat.yml
+        - name: varlog
+          mountPath: /var/log
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: filebeat-config
+      - name: varlog
+        hostPath:
+          path: /var/log
+
