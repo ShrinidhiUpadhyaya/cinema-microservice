@@ -57,7 +57,7 @@ mediator.on("db.ready", (db) => {
     .then((app) => {
       logger.info(
         {
-          port: port,
+          port: config.serverSettings.port,
         },
         "Application Started"
       );
