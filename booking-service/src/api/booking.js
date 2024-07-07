@@ -11,8 +11,7 @@ module.exports = ({ repo }, app) => {
     // make use of child logger
     const childLogger = logger.child({
       method: req.method,
-      api: "/booking",
-      params: req.body,
+      api: req.originalUrl,
     });
 
     childLogger.info("Request");
@@ -88,6 +87,8 @@ module.exports = ({ repo }, app) => {
           body: req.body,
           params: req.params,
           query: req.query,
+          headers: req.headers,
+          statusCode: res.status,
           user: {
             ip: req.ip,
             userAgent: req.get("User-Agent"),
@@ -104,8 +105,6 @@ module.exports = ({ repo }, app) => {
     const childLogger = logger.child({
       method: req.method,
       api: "/booking/verify/:orderId",
-      params: req.params,
-      headers: req.headers,
     });
 
     childLogger.info("Request");
@@ -125,6 +124,9 @@ module.exports = ({ repo }, app) => {
           body: req.body,
           params: req.params,
           query: req.query,
+          headers: req.headers,
+          statusCode: res.status,
+
           user: {
             ip: req.ip,
             userAgent: req.get("User-Agent"),
@@ -136,4 +138,27 @@ module.exports = ({ repo }, app) => {
         next(err);
       });
   });
+
+  // app.use((err, req, res, next) => {
+  //   logger.debug("Error occured", {
+  //     reason: err.message,
+  //     stackTrace: err.stackTrace,
+  //     method: req.method,
+  //     api: req.originalUrl,
+  //     body: req.body,
+  //     params: req.params,
+  //     query: req.query,
+  //     user: {
+  //       ip: req.ip,
+  //       userAgent: req.get("User-Agent"),
+  //     },
+  //     performance: {
+  //       responseTime: res.get("X-Response Time"),
+  //     },
+  //   });
+
+  //   res
+  //     .status(status.INTERNAL_SERVER_ERROR)
+  //     .json({ error: "Internal Server Error" });
+  // });
 };
