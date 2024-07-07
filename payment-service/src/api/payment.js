@@ -1,32 +1,91 @@
 "use strict";
 const status = require("http-status");
-const { logger, errorLogger, init } = require("../config/logger");
+const logger = require("../config/logger");
 
 module.exports = ({ repo }, app) => {
-  init("payment-service");
-  app.use(logger);
-
   app.post("/payment/makePurchase", (req, res, next) => {
     const { validate } = req.container.cradle;
 
+    const childLogger = logger.child({
+      method: req.method,
+      api: req.originalUrl,
+    });
+
+    childLogger.info("Request");
+
     validate(req.body.paymentOrder, "payment")
       .then((payment) => {
+        childLogger.trace("validation successfull", {
+          values: { payment },
+        });
         return repo.registerPurchase(payment);
       })
       .then((paid) => {
+        childLogger.trace("payment sucessfull", {
+          values: { paid },
+        });
+
         res.status(status.OK).json({ paid });
       })
-      .catch(next);
+      .catch((err) => {
+        childLogger.debug("Error occured", {
+          reason: err.message,
+          stackTrace: err.stackTrace,
+          body: req.body,
+          params: req.params,
+          query: req.query,
+          headers: req.headers,
+          statusCode: res.status,
+          user: {
+            ip: req.ip,
+            userAgent: req.get("User-Agent"),
+          },
+          performance: {
+            responseTime: res.get("X-Response Time"),
+          },
+        });
+        next(err);
+      });
   });
 
   app.get("/payment/getPurchaseById/:id", (req, res, next) => {
+    const childLogger = logger.child({
+      method: req.method,
+      api: req.originalUrl,
+      params: req.params,
+    });
+
+    childLogger.info("Request");
+
     repo
       .getPurchaseById(req.params.id)
       .then((payment) => {
+        childLogger.trace("send payment", {
+          values: { payment },
+        });
+
         res.status(status.OK).json({ payment });
       })
-      .catch(next);
+      .catch((err) => {
+        childLogger.debug("Error occured", {
+          reason: err.message,
+          stackTrace: err.stackTrace,
+          method: req.method,
+          api: req.originalUrl,
+          body: req.body,
+          params: req.params,
+          query: req.query,
+          headers: req.headers,
+          statusCode: res.status,
+          user: {
+            ip: req.ip,
+            userAgent: req.get("User-Agent"),
+          },
+          performance: {
+            responseTime: res.get("X-Response Time"),
+          },
+        });
+        next(err);
+      });
   });
-
-  app.use(errorLogger);
 };
