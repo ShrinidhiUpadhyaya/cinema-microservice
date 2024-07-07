@@ -82,9 +82,9 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
-  return new Promise((resolve, reject) => {
-    logger.info(container);
+  logger.info(container);
 
+  return new Promise((resolve, reject) => {
     if (!container.resolve("database")) {
       logger.error("connection db not supplied!");
       reject(new Error("connection db not supplied!"));
