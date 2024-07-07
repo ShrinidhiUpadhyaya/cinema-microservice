@@ -4,25 +4,53 @@ const server = require("./server/server");
 const repository = require("./repository/repository");
 const config = require("./config/");
 const mediator = new EventEmitter();
+const logger = require("./config/logger");
+const os = require("os");
 
-console.log("--- Cinemas Catalog Service ---");
-console.log("Connecting to cinemas catalog repository...");
+logger.info("---- APPLICATION INIT ----");
 
-process.on("uncaughtException", (err) => {
-  console.error("Unhandled Exception", err);
-});
+const handleShutdown = (err) => {
+  logger.fatal(
+    {
+      reason: err,
+      type: os.type(),
+      cpuUsage: process.cpuUsage(),
+      memoryUsage: process.memoryUsage(),
+      loadAverage: os.loadavg(),
+      uptime: process.uptime(),
+    },
+    "Application Stopped"
+  );
+};
 
-process.on("uncaughtRejection", (err, promise) => {
-  console.error("Unhandled Rejection", err);
-});
+process.on("SIGINT", handleShutdown);
+process.on("SIGTERM", handleShutdown);
+process.on("SIGSEGV", handleShutdown);
+process.on("SIGILL", handleShutdown);
+process.on("SIGABRT", handleShutdown);
+process.on("SIGFPE", handleShutdown);
+
+process.on("uncaughtRejection", handleShutdown);
+process.on("uncaughtException", handleShutdown);
 
 mediator.on("db.ready", (db) => {
   let rep;
   repository
     .connect({ db, ObjectID: config.ObjectID })
     .then((repo) => {
-      console.log("Connected. Starting Server");
       rep = repo;
+
+      // use macros or common hardcoded strings for messages or strings.
+
+      logger.info(
+        {
+          port: config.serverSettings.port,
+          ssl: config.serverSettings.ssl,
+          ObjectID: config.ObjectID,
+        },
+        "configuration settings"
+      );
+
       return server.start({
         port: config.serverSettings.port,
         ssl: config.serverSettings.ssl,
@@ -30,8 +58,11 @@ mediator.on("db.ready", (db) => {
       });
     })
     .then((app) => {
-      console.log(
-        `Server started succesfully, running on port: ${config.serverSettings.port}.`
+      logger.info(
+        {
+          port: port,
+        },
+        "Application Started"
       );
       app.on("close", () => {
         rep.disconnect();
