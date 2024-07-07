@@ -4,25 +4,50 @@ const server = require("./server/server");
 const repository = require("./repository/repository");
 const config = require("./config");
 const mediator = new EventEmitter();
+const logger = require("./config/logger");
+const os = require("os");
+logger.info("---- APPLICATION INIT ----");
 
-console.log("--- Movies Service ---");
-console.log("Connecting to movies repository...");
+const handleShutdown = (err) => {
+  logger.fatal(
+    {
+      reason: err,
+      type: os.type(),
+      cpuUsage: process.cpuUsage(),
+      memoryUsage: process.memoryUsage(),
+      loadAverage: os.loadavg(),
+      uptime: process.uptime(),
+    },
+    "Application Stopped"
+  );
+};
 
-process.on("uncaughtException", (err) => {
-  console.error("Unhandled Exception", err);
-});
+process.on("SIGINT", handleShutdown);
+process.on("SIGTERM", handleShutdown);
+process.on("SIGSEGV", handleShutdown);
+process.on("SIGILL", handleShutdown);
+process.on("SIGABRT", handleShutdown);
+process.on("SIGFPE", handleShutdown);
 
-process.on("uncaughtRejection", (err, promise) => {
-  console.error("Unhandled Rejection", err);
-});
+process.on("uncaughtRejection", handleShutdown);
+process.on("uncaughtException", handleShutdown);
 
 mediator.on("db.ready", (db) => {
   let rep;
   repository
     .connect(db)
     .then((repo) => {
-      console.log("Connected. Starting Server");
       rep = repo;
+
+      logger.info(
+        {
+          port: config.serverSettings.port,
+          ssl: config.serverSettings.ssl,
+          dbSettings: config.dbSettings,
+        },
+        "configuration settings"
+      );
+
       return server.start({
         port: config.serverSettings.port,
         ssl: config.serverSettings.ssl,
@@ -30,8 +55,11 @@ mediator.on("db.ready", (db) => {
       });
     })
     .then((app) => {
-      console.log(
-        `Server started succesfully, running on port: ${config.serverSettings.port}.`
+      logger.info(
+        {
+          port: port,
+        },
+        "Application Started"
       );
       app.on("close", () => {
         rep.disconnect();

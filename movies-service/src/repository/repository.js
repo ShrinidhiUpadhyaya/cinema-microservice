@@ -1,4 +1,5 @@
 "use strict";
+const logger = require("../config/logger");
 
 const repository = (db) => {
   const collection = db.collection("movies");
@@ -65,6 +66,8 @@ const repository = (db) => {
   };
 
   const disconnect = () => {
+    logger.info("db.disconnect");
+
     db.close();
   };
 
@@ -77,7 +80,11 @@ const repository = (db) => {
 };
 
 const connect = (connection) => {
+  logger.info(connection, "repository connect");
+
   return new Promise((resolve, reject) => {
+    logger.error("connection db not supplied!");
+
     if (!connection) {
       reject(new Error("connection db not supplied!"));
     }
