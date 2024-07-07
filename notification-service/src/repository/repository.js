@@ -1,4 +1,6 @@
 "use strict";
+const logger = require("../config/logger");
+
 const repository = (container) => {
   const sendEmail = (payload) => {
     return new Promise((resolve, reject) => {
@@ -55,8 +57,12 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
+  logger.info(container);
+
   return new Promise((resolve, reject) => {
     if (!container) {
+      logger.error("dependencies not supplied!");
+
       reject(new Error("dependencies not supplied!"));
     }
     resolve(repository(container));

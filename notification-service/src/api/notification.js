@@ -1,13 +1,15 @@
 "use strict";
 const status = require("http-status");
-const { logger, errorLogger, init } = require("../config/logger");
+const logger = require("../config/logger");
 
 module.exports = ({ repo }, app) => {
-  init("notification-service");
-  app.use(logger);
-
   app.post("/notification/sendEmail", (req, res, next) => {
-    console.log("/notification/sendEmail");
+    const childLogger = logger.child({
+      method: req.method,
+      api: req.originalUrl,
+    });
+
+    childLogger.info("Request");
 
     // ****Temporary
     const { validate } = req.container.cradle;
@@ -29,15 +31,44 @@ module.exports = ({ repo }, app) => {
   app.post("/notification/sendSMS", (req, res, next) => {
     const { validate } = req.container.cradle;
 
+    const childLogger = logger.child({
+      method: req.method,
+      api: req.originalUrl,
+    });
+
+    childLogger.info("Request");
+
     validate(req.body.payload, "notification")
       .then((payload) => {
+        childLogger.trace("validation successfull", {
+          values: { payload },
+        });
         return repo.sendSMS(payload);
       })
       .then((ok) => {
+        childLogger.trace("sms sent successfully", {
+          values: { ok },
+        });
         res.status(status.OK).json({ msg: "ok" });
       })
-      .catch(next);
+      .catch((err) => {
+        childLogger.debug("Error occured", {
+          reason: err.message,
+          stackTrace: err.stackTrace,
+          body: req.body,
+          params: req.params,
+          query: req.query,
+          headers: req.headers,
+          statusCode: res.status,
+          user: {
+            ip: req.ip,
+            userAgent: req.get("User-Agent"),
+          },
+          performance: {
+            responseTime: res.get("X-Response Time"),
+          },
+        });
+        next(err);
+      });
   });
-
-  app.use(errorLogger);
 };
