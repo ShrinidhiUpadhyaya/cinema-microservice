@@ -4,29 +4,48 @@ const server = require("./server/server");
 const repository = require("./repository/repository");
 const di = require("./config");
 const mediator = new EventEmitter();
+const logger = require("./config/logger");
+const os = require("os");
 
-console.log("--- Payment Service ---");
-console.log("Connecting to payment repository...");
+logger.info("---- APPLICATION INIT ----");
 
-process.on("uncaughtException", (err) => {
-  console.error("Unhandled Exception", err);
-});
+const handleShutdown = (err) => {
+  logger.fatal(
+    {
+      reason: err,
+      type: os.type(),
+      cpuUsage: process.cpuUsage(),
+      memoryUsage: process.memoryUsage(),
+      loadAverage: os.loadavg(),
+      uptime: process.uptime(),
+    },
+    "Application Stopped"
+  );
+};
 
-process.on("uncaughtRejection", (err, promise) => {
-  console.error("Unhandled Rejection", err);
-});
+process.on("SIGINT", handleShutdown);
+process.on("SIGTERM", handleShutdown);
+process.on("SIGSEGV", handleShutdown);
+process.on("SIGILL", handleShutdown);
+process.on("SIGABRT", handleShutdown);
+process.on("SIGFPE", handleShutdown);
+
+process.on("uncaughtRejection", handleShutdown);
+process.on("uncaughtException", handleShutdown);
 
 mediator.on("di.ready", (container) => {
   repository
     .connect(container)
     .then((repo) => {
-      console.log("Connected. Starting Server");
       container.registerValue({ repo });
       return server.start(container);
     })
     .then((app) => {
-      console.log(
-        `Server started succesfully, running on port: ${container.cradle.serverSettings.port}.`
+      logger.info(
+        {
+          port: port,
+        },
+        "Application Started"
       );
       app.on("close", () => {
         container.resolve("repo").disconnect();
