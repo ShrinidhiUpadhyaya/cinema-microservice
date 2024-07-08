@@ -31,14 +31,17 @@ module.exports = ({ repo }, app) => {
   app.post("/notification/sendSMS", (req, res, next) => {
     const { validate } = req.container.cradle;
 
+    const payload = req.body.payload;
+
     const childLogger = logger.child({
       method: req.method,
       api: req.originalUrl,
+      input: payload,
     });
 
     childLogger.info("Request");
 
-    validate(req.body.payload, "notification")
+    validate(payload, "notification")
       .then((payload) => {
         childLogger.trace(
           {

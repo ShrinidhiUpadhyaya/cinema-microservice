@@ -18,7 +18,7 @@ module.exports = (app, options) => {
       .then((movies) => {
         childLogger.trace(
           {
-            values: { movies },
+            values: movies,
           },
           "getAllMovies successfull"
         );
@@ -39,7 +39,7 @@ module.exports = (app, options) => {
       .then((movies) => {
         childLogger.trace(
           {
-            values: { movies },
+            values: movies,
           },
           "getMoviePremiers successfull"
         );
@@ -49,19 +49,20 @@ module.exports = (app, options) => {
   });
 
   app.get("/movies/:id", (req, res, next) => {
+    const id = req.params.id;
     const childLogger = logger.child({
       method: req.method,
       api: req.originalUrl,
-      input: req.params.id,
+      input: id,
     });
 
     childLogger.info("Request");
     repo
-      .getMovieById(req.params.id)
+      .getMovieById(id)
       .then((movie) => {
         childLogger.trace(
           {
-            values: { movie },
+            values: movie,
           },
           "getMovieById successfull"
         );

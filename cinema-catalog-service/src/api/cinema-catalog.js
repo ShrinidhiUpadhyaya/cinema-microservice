@@ -6,20 +6,22 @@ module.exports = (app, options) => {
   const { repo } = options;
 
   app.get("/cinemas", (req, res, next) => {
+    const cityId = req.query.cityId;
+
     const childLogger = logger.child({
       method: req.method,
       api: req.originalUrl,
-      input: req.query.cityId,
+      input: cityId,
     });
 
     childLogger.info("Request");
 
     repo
-      .getCinemasByCity(req.query.cityId)
+      .getCinemasByCity(cityId)
       .then((cinemas) => {
         childLogger.trace(
           {
-            values: { cinemas },
+            values: cinemas,
           },
           "getCinemasByCity successfull"
         );
@@ -53,19 +55,21 @@ module.exports = (app, options) => {
   });
 
   app.get("/cinemas/:cinemaId", (req, res, next) => {
+    const cinemaId = req.params.cinemaId;
+
     const childLogger = logger.child({
       method: req.method,
       api: req.originalUrl,
-      input: req.params.cinemaId,
+      input: cinemaId,
     });
 
     childLogger.info("Request");
     repo
-      .getCinemaById(req.params.cinemaId)
+      .getCinemaById(cinemaId)
       .then((cinema) => {
         childLogger.trace(
           {
-            values: { cinema },
+            values: cinema,
           },
           "getCinemaById successfull"
         );
@@ -116,7 +120,7 @@ module.exports = (app, options) => {
       .then((schedules) => {
         childLogger.trace(
           {
-            values: { schedules },
+            values: schedules,
           },
           "getCinemaScheduleByMovie successfull"
         );

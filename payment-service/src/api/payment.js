@@ -6,14 +6,17 @@ module.exports = ({ repo }, app) => {
   app.post("/payment/makePurchase", (req, res, next) => {
     const { validate } = req.container.cradle;
 
+    const paymentOrder = req.body.paymentOrder;
+
     const childLogger = logger.child({
       method: req.method,
       api: req.originalUrl,
+      input: paymentOrder,
     });
 
     childLogger.info("Request");
 
-    validate(req.body.paymentOrder, "payment")
+    validate(paymentOrder, "payment")
       .then((payment) => {
         childLogger.trace(
           {
@@ -58,16 +61,17 @@ module.exports = ({ repo }, app) => {
   });
 
   app.get("/payment/getPurchaseById/:id", (req, res, next) => {
+    const id = req.params.id;
     const childLogger = logger.child({
       method: req.method,
       api: req.originalUrl,
-      params: req.params,
+      input: id,
     });
 
     childLogger.info("Request");
 
     repo
-      .getPurchaseById(req.params.id)
+      .getPurchaseById(id)
       .then((payment) => {
         childLogger.trace(
           {

@@ -8,6 +8,9 @@ module.exports = ({ repo }, app) => {
     const paymentService = req.container.resolve("paymentService");
     const notificationService = req.container.resolve("notificationService");
 
+    const user = req.body.user;
+    const booking = req.body.booking;
+
     // make use of child logger
     const childLogger = logger.child({
       method: req.method,
@@ -16,10 +19,7 @@ module.exports = ({ repo }, app) => {
 
     childLogger.info("Request");
 
-    Promise.all([
-      validate(req.body.user, "user"),
-      validate(req.body.booking, "booking"),
-    ])
+    Promise.all([validate(user, "user"), validate(booking, "booking")])
       .then(([user, booking]) => {
         // Return Value Logging
         childLogger.trace(
@@ -110,15 +110,18 @@ module.exports = ({ repo }, app) => {
   });
 
   app.get("/booking/verify/:orderId", (req, res, next) => {
+    const orderId = req.params.orderId;
+
     const childLogger = logger.child({
       method: req.method,
       api: "/booking/verify/:orderId",
+      input: orderId,
     });
 
     childLogger.info("Request");
 
     repo
-      .getOrderById(req.params.orderId)
+      .getOrderById(orderId)
       .then((order) => {
         childLogger.trace({ values: order }, "getOrderById successfull");
         res.status(status.OK).json(order);
