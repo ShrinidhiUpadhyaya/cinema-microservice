@@ -22,9 +22,12 @@ module.exports = ({ repo }, app) => {
     ])
       .then(([user, booking]) => {
         // Return Value Logging
-        childLogger.trace("validation successfull", {
-          values: { user, booking },
-        });
+        childLogger.trace(
+          {
+            values: { user, booking },
+          },
+          "validation successfull"
+        );
         const payment = {
           userName: user.name + " " + user.lastName,
           currency: "mxn",
@@ -47,7 +50,7 @@ module.exports = ({ repo }, app) => {
       })
       .then(([paid, user, booking]) => {
         // Return Value Logging
-        childLogger.trace("make booking", { values: { paid, user, booking } });
+        childLogger.trace({ values: { paid, user, booking } }, "make booking");
 
         return Promise.all([
           repo.makeBooking(user, booking),
@@ -57,9 +60,12 @@ module.exports = ({ repo }, app) => {
       })
       .then(([booking, paid, user]) => {
         // Return Value Logging
-        childLogger.trace("generate ticket", {
-          values: { booking, paid, user },
-        });
+        childLogger.trace(
+          {
+            values: { booking, paid, user },
+          },
+          "generate ticket"
+        );
 
         return Promise.all([
           repo.generateTicket(paid, booking),
@@ -68,7 +74,7 @@ module.exports = ({ repo }, app) => {
       })
       .then(([ticket, user]) => {
         // Return Value Logging
-        childLogger.trace("send notification", { values: { ticket, user } });
+        childLogger.trace({ values: { ticket, user } }, "send notification");
 
         const payload = Object.assign({}, ticket, {
           user: { name: user.name + user.lastName, email: user.email },
@@ -78,25 +84,27 @@ module.exports = ({ repo }, app) => {
       })
       .catch((err) => {
         // Exception Logging, Not all errors should be logged with error
-        childLogger.debug({
-          msg: "Error occured",
-          reason: err.message,
-          stackTrace: err.stackTrace,
-          method: req.method,
-          api: req.originalUrl,
-          body: req.body,
-          params: req.params,
-          query: req.query,
-          headers: req.headers,
-          statusCode: res.status,
-          user: {
-            ip: req.ip,
-            userAgent: req.get("User-Agent"),
+        childLogger.debug(
+          {
+            reason: err.message,
+            stackTrace: err.stackTrace,
+            method: req.method,
+            api: req.originalUrl,
+            body: req.body,
+            params: req.params,
+            query: req.query,
+            headers: req.headers,
+            statusCode: res.status,
+            user: {
+              ip: req.ip,
+              userAgent: req.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
         next(err);
       });
   });
@@ -112,7 +120,7 @@ module.exports = ({ repo }, app) => {
     repo
       .getOrderById(req.params.orderId)
       .then((order) => {
-        childLogger.trace(status.OK, order);
+        childLogger.trace({ values: order }, "getOrderById successfull");
         res.status(status.OK).json(order);
       })
       .catch((err) => {

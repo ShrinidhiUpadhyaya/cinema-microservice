@@ -105,7 +105,7 @@ const repository = (connection) => {
 };
 
 const connect = (connection) => {
-  logger.info(connection);
+  logger.info(connection, "repository connect");
 
   return new Promise((resolve, reject) => {
     if (!connection) {

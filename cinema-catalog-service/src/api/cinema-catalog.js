@@ -17,31 +17,36 @@ module.exports = (app, options) => {
     repo
       .getCinemasByCity(req.query.cityId)
       .then((cinemas) => {
-        childLogger.trace("getCinemasByCity successfull", {
-          values: { cinemas },
-        });
+        childLogger.trace(
+          {
+            values: { cinemas },
+          },
+          "getCinemasByCity successfull"
+        );
         res.status(status.OK).json(cinemas);
       })
       .catch((err) => {
-        childLogger.debug({
-          msg: "Error occured",
-          reason: err.message,
-          stackTrace: err.stackTrace,
-          method: req.method,
-          api: req.originalUrl,
-          body: req.body,
-          params: req.params,
-          query: req.query,
-          headers: req.headers,
-          statusCode: res.status,
-          user: {
-            ip: req.ip,
-            userAgent: req.get("User-Agent"),
+        childLogger.debug(
+          {
+            reason: err.message,
+            stackTrace: err.stackTrace,
+            method: req.method,
+            api: req.originalUrl,
+            body: req.body,
+            params: req.params,
+            query: req.query,
+            headers: req.headers,
+            statusCode: res.status,
+            user: {
+              ip: req.ip,
+              userAgent: req.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
 
         next(err);
       });
@@ -58,31 +63,36 @@ module.exports = (app, options) => {
     repo
       .getCinemaById(req.params.cinemaId)
       .then((cinema) => {
-        childLogger.trace("getCinemaById successfull", {
-          values: { cinema },
-        });
+        childLogger.trace(
+          {
+            values: { cinema },
+          },
+          "getCinemaById successfull"
+        );
         res.status(status.OK).json(cinema);
       })
       .catch((err) => {
-        childLogger.debug({
-          msg: "Error occured",
-          reason: err.message,
-          stackTrace: err.stackTrace,
-          method: req.method,
-          api: req.originalUrl,
-          body: req.body,
-          params: req.params,
-          query: req.query,
-          headers: req.headers,
-          statusCode: res.status,
-          user: {
-            ip: req.ip,
-            userAgent: req.get("User-Agent"),
+        childLogger.debug(
+          {
+            reason: err.message,
+            stackTrace: err.stackTrace,
+            method: req.method,
+            api: req.originalUrl,
+            body: req.body,
+            params: req.params,
+            query: req.query,
+            headers: req.headers,
+            statusCode: res.status,
+            user: {
+              ip: req.ip,
+              userAgent: req.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
         next(err);
       });
   });
@@ -104,31 +114,36 @@ module.exports = (app, options) => {
     repo
       .getCinemaScheduleByMovie(params)
       .then((schedules) => {
-        childLogger.trace("getCinemaScheduleByMovie successfull", {
-          values: { schedules },
-        });
+        childLogger.trace(
+          {
+            values: { schedules },
+          },
+          "getCinemaScheduleByMovie successfull"
+        );
         res.status(status.OK).json(schedules);
       })
       .catch((err) => {
-        childLogger.debug({
-          msg: "Error occured",
-          reason: err.message,
-          stackTrace: err.stackTrace,
-          method: req.method,
-          api: req.originalUrl,
-          body: req.body,
-          params: req.params,
-          query: req.query,
-          headers: req.headers,
-          statusCode: res.status,
-          user: {
-            ip: req.ip,
-            userAgent: req.get("User-Agent"),
+        childLogger.debug(
+          {
+            reason: err.message,
+            stackTrace: err.stackTrace,
+            method: req.method,
+            api: req.originalUrl,
+            body: req.body,
+            params: req.params,
+            query: req.query,
+            headers: req.headers,
+            statusCode: res.status,
+            user: {
+              ip: req.ip,
+              userAgent: req.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
 
         next(err);
       });

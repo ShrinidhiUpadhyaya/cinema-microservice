@@ -40,34 +40,43 @@ module.exports = ({ repo }, app) => {
 
     validate(req.body.payload, "notification")
       .then((payload) => {
-        childLogger.trace("validation successfull", {
-          values: { payload },
-        });
+        childLogger.trace(
+          {
+            values: payload,
+          },
+          "validation successfull"
+        );
         return repo.sendSMS(payload);
       })
       .then((ok) => {
-        childLogger.trace("sms sent successfully", {
-          values: { ok },
-        });
+        childLogger.trace(
+          {
+            values: { ok },
+          },
+          "sms sent successfully"
+        );
         res.status(status.OK).json({ msg: "ok" });
       })
       .catch((err) => {
-        childLogger.debug("Error occured", {
-          reason: err.message,
-          stackTrace: err.stackTrace,
-          body: req.body,
-          params: req.params,
-          query: req.query,
-          headers: req.headers,
-          statusCode: res.status,
-          user: {
-            ip: req.ip,
-            userAgent: req.get("User-Agent"),
+        childLogger.debug(
+          {
+            reason: err.message,
+            stackTrace: err.stackTrace,
+            body: req.body,
+            params: req.params,
+            query: req.query,
+            headers: req.headers,
+            statusCode: res.status,
+            user: {
+              ip: req.ip,
+              userAgent: req.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
         next(err);
       });
   });

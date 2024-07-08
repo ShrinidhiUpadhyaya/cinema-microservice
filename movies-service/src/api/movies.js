@@ -16,9 +16,12 @@ module.exports = (app, options) => {
     repo
       .getAllMovies()
       .then((movies) => {
-        childLogger.trace("getAllMovies successfull", {
-          values: { movies },
-        });
+        childLogger.trace(
+          {
+            values: { movies },
+          },
+          "getAllMovies successfull"
+        );
         res.status(status.OK).json(movies);
       })
       .catch(next);
@@ -34,9 +37,12 @@ module.exports = (app, options) => {
     repo
       .getMoviePremiers()
       .then((movies) => {
-        childLogger.trace("getMoviePremiers successfull", {
-          values: { movies },
-        });
+        childLogger.trace(
+          {
+            values: { movies },
+          },
+          "getMoviePremiers successfull"
+        );
         res.status(status.OK).json(movies);
       })
       .catch(next);
@@ -53,9 +59,12 @@ module.exports = (app, options) => {
     repo
       .getMovieById(req.params.id)
       .then((movie) => {
-        childLogger.trace("getMovieById successfull", {
-          values: { movie },
-        });
+        childLogger.trace(
+          {
+            values: { movie },
+          },
+          "getMovieById successfull"
+        );
         res.status(status.OK).json(movie);
       })
       .catch(next);

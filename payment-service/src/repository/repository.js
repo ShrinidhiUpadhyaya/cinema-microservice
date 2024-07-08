@@ -1,4 +1,6 @@
 "use strict";
+const logger = require("../config/logger");
+
 const repository = (container) => {
   const { database: db } = container.cradle;
 
@@ -76,7 +78,7 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
-  logger.info(container);
+  logger.info(container, "repository connect");
 
   return new Promise((resolve, reject) => {
     if (!container.resolve("database")) {
