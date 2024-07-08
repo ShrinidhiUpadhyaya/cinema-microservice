@@ -7,8 +7,8 @@ module.exports = (app, options) => {
 
   app.get("/movies", (req, res, next) => {
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
     });
 
     childLogger.info("Request");
@@ -29,8 +29,8 @@ module.exports = (app, options) => {
 
   app.get("/movies/premieres", (req, res, next) => {
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
     });
 
     childLogger.info("Request");
@@ -49,10 +49,10 @@ module.exports = (app, options) => {
   });
 
   app.get("/movies/:id", (req, res, next) => {
-    const id = req.params.id;
+    const id = req?.params?.id;
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
       input: id,
     });
 

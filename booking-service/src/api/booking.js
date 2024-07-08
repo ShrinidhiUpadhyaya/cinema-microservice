@@ -8,13 +8,13 @@ module.exports = ({ repo }, app) => {
     const paymentService = req.container.resolve("paymentService");
     const notificationService = req.container.resolve("notificationService");
 
-    const user = req.body.user;
-    const booking = req.body.booking;
+    const user = req?.body?.user;
+    const booking = req?.body?.booking;
 
     // make use of child logger
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
     });
 
     childLogger.info("Request");
@@ -86,21 +86,21 @@ module.exports = ({ repo }, app) => {
         // Exception Logging, Not all errors should be logged with error
         childLogger.debug(
           {
-            reason: err.message,
-            stackTrace: err.stackTrace,
-            method: req.method,
-            api: req.originalUrl,
-            body: req.body,
-            params: req.params,
-            query: req.query,
-            headers: req.headers,
-            statusCode: res.status,
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
             user: {
-              ip: req.ip,
-              userAgent: req.get("User-Agent"),
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
             },
             performance: {
-              responseTime: res.get("X-Response Time"),
+              responseTime: res?.get("X-Response Time"),
             },
           },
           "Error occured"
@@ -110,10 +110,10 @@ module.exports = ({ repo }, app) => {
   });
 
   app.get("/booking/verify/:orderId", (req, res, next) => {
-    const orderId = req.params.orderId;
+    const orderId = req?.params?.orderId;
 
     const childLogger = logger.child({
-      method: req.method,
+      method: req?.method,
       api: "/booking/verify/:orderId",
       input: orderId,
     });
@@ -128,22 +128,22 @@ module.exports = ({ repo }, app) => {
       })
       .catch((err) => {
         childLogger.debug("Error occured", {
-          reason: err.message,
-          stackTrace: err.stackTrace,
-          method: req.method,
-          api: req.originalUrl,
-          body: req.body,
-          params: req.params,
-          query: req.query,
-          headers: req.headers,
-          statusCode: res.status,
+          reason: err?.message,
+          stackTrace: err?.stackTrace,
+          method: req?.method,
+          api: req?.originalUrl,
+          body: req?.body,
+          params: req?.params,
+          query: req?.query,
+          headers: req?.headers,
+          statusCode: res?.status,
 
           user: {
-            ip: req.ip,
-            userAgent: req.get("User-Agent"),
+            ip: req?.ip,
+            userAgent: req?.get("User-Agent"),
           },
           performance: {
-            responseTime: res.get("X-Response Time"),
+            responseTime: res?.get("X-Response Time"),
           },
         });
         next(err);

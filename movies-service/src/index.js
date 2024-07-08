@@ -12,11 +12,11 @@ const handleShutdown = (err) => {
   logger.fatal(
     {
       reason: err,
-      type: os.type(),
-      cpuUsage: process.cpuUsage(),
-      memoryUsage: process.memoryUsage(),
-      loadAverage: os.loadavg(),
-      uptime: process.uptime(),
+      type: os?.type(),
+      cpuUsage: process?.cpuUsage(),
+      memoryUsage: process?.memoryUsage(),
+      loadAverage: os?.loadavg(),
+      uptime: process?.uptime(),
     },
     "Application Stopped"
   );
@@ -41,9 +41,9 @@ mediator.on("db.ready", (db) => {
 
       logger.info(
         {
-          port: config.serverSettings.port,
-          ssl: config.serverSettings.ssl,
-          dbSettings: config.dbSettings,
+          port: config?.serverSettings?.port,
+          ssl: config?.serverSettings?.ssl,
+          dbSettings: config?.dbSettings,
         },
         "configuration settings"
       );
@@ -57,7 +57,7 @@ mediator.on("db.ready", (db) => {
     .then((app) => {
       logger.info(
         {
-          port: config.serverSettings.port,
+          port: config?.serverSettings?.port,
         },
         "Application Started"
       );

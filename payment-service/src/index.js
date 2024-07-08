@@ -13,11 +13,11 @@ const handleShutdown = (err) => {
   logger.fatal(
     {
       reason: err,
-      type: os.type(),
-      cpuUsage: process.cpuUsage(),
-      memoryUsage: process.memoryUsage(),
-      loadAverage: os.loadavg(),
-      uptime: process.uptime(),
+      type: os?.type(),
+      cpuUsage: process?.cpuUsage(),
+      memoryUsage: process?.memoryUsage(),
+      loadAverage: os?.loadavg(),
+      uptime: process?.uptime(),
     },
     "Application Stopped"
   );

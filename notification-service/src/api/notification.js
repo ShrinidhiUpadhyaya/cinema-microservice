@@ -5,8 +5,8 @@ const logger = require("../config/logger");
 module.exports = ({ repo }, app) => {
   app.post("/notification/sendEmail", (req, res, next) => {
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
     });
 
     childLogger.info("Request");
@@ -31,11 +31,11 @@ module.exports = ({ repo }, app) => {
   app.post("/notification/sendSMS", (req, res, next) => {
     const { validate } = req.container.cradle;
 
-    const payload = req.body.payload;
+    const payload = req?.body?.payload;
 
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
       input: payload,
     });
 
@@ -63,19 +63,19 @@ module.exports = ({ repo }, app) => {
       .catch((err) => {
         childLogger.debug(
           {
-            reason: err.message,
-            stackTrace: err.stackTrace,
-            body: req.body,
-            params: req.params,
-            query: req.query,
-            headers: req.headers,
-            statusCode: res.status,
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
             user: {
-              ip: req.ip,
-              userAgent: req.get("User-Agent"),
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
             },
             performance: {
-              responseTime: res.get("X-Response Time"),
+              responseTime: res?.get("X-Response Time"),
             },
           },
           "Error occured"

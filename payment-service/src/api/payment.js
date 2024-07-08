@@ -6,11 +6,11 @@ module.exports = ({ repo }, app) => {
   app.post("/payment/makePurchase", (req, res, next) => {
     const { validate } = req.container.cradle;
 
-    const paymentOrder = req.body.paymentOrder;
+    const paymentOrder = req?.body?.paymentOrder;
 
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
       input: paymentOrder,
     });
 
@@ -39,19 +39,19 @@ module.exports = ({ repo }, app) => {
       .catch((err) => {
         childLogger.debug(
           {
-            reason: err.message,
-            stackTrace: err.stackTrace,
-            body: req.body,
-            params: req.params,
-            query: req.query,
-            headers: req.headers,
-            statusCode: res.status,
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
             user: {
-              ip: req.ip,
-              userAgent: req.get("User-Agent"),
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
             },
             performance: {
-              responseTime: res.get("X-Response Time"),
+              responseTime: res?.get("X-Response Time"),
             },
           },
           "Error occured"
@@ -61,10 +61,10 @@ module.exports = ({ repo }, app) => {
   });
 
   app.get("/payment/getPurchaseById/:id", (req, res, next) => {
-    const id = req.params.id;
+    const id = req?.params?.id;
     const childLogger = logger.child({
-      method: req.method,
-      api: req.originalUrl,
+      method: req?.method,
+      api: req?.originalUrl,
       input: id,
     });
 
@@ -85,21 +85,21 @@ module.exports = ({ repo }, app) => {
       .catch((err) => {
         childLogger.debug(
           {
-            reason: err.message,
-            stackTrace: err.stackTrace,
-            method: req.method,
-            api: req.originalUrl,
-            body: req.body,
-            params: req.params,
-            query: req.query,
-            headers: req.headers,
-            statusCode: res.status,
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
             user: {
-              ip: req.ip,
-              userAgent: req.get("User-Agent"),
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
             },
             performance: {
-              responseTime: res.get("X-Response Time"),
+              responseTime: res?.get("X-Response Time"),
             },
           },
           "Error occured"
