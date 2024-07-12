@@ -72,6 +72,8 @@ spec:
           value: "3000"
         - name: NGINX_SERVICE
           value: "http://nginx-service"
+        - name: LOG_APPLICATION
+          value: "catalog-service"
         volumeMounts:
         - name: varlog
           mountPath: /var/log

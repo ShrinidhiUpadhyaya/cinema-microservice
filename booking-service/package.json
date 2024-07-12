@@ -44,6 +44,7 @@
     "mongodb": "^6.6.2",
     "morgan": "^1.7.0",
     "pino": "^9.2.0",
+    "pino-socket": "^7.3.0",
     "spdy": "^3.4.4",
     "supertest": "^3.0.0"
   }

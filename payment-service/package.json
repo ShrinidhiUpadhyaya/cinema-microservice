@@ -48,6 +48,7 @@
     "nodemailer": "^6.9.13",
     "nodemailer-smtp-transport": "^2.7.4",
     "pino": "^9.2.0",
+    "pino-socket": "^7.3.0",
     "spdy": "^3.4.4",
     "stripe": "^15.8.0",
     "winston": "^3.13.0"

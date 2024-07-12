@@ -50,3 +50,6 @@ spec:
           value: "sk_test_51PMT2AP5AkwyiGFaJ2dAZUr2sBus8N2KrNjYwgGt4hrnYWWh1vkr0fQtUCEPXEM68nlMPdQLUrgA1PZOTt0JajWm00UdZ3AuW7"
         - name: STRIPE_PUBLIC
           value: "pk_test_51PMT2AP5AkwyiGFam5qqmNtdHarUsue9X6W1KhzzWKME94UpJ5w1NCrIMhzT5h690iAd9sv06MSfQHtizP5UJhc6008OPSlYgq"
+        - name: LOG_APPLICATION
+          value: "payment-service"
+

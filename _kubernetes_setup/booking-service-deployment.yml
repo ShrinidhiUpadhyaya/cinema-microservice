@@ -72,24 +72,26 @@ spec:
           value: "3000"
         - name: NGINX_SERVICE
           value: "http://nginx-service"
-        volumeMounts:
-        - name: varlog
-          mountPath: /var/log
-      - name: filebeat
-        image: docker.elastic.co/beats/filebeat:8.13.4
-        args: ["-c", "/etc/filebeat.yml", "-e"]
-        volumeMounts:
-        - name: config
-          mountPath: /etc/filebeat.yml
-          subPath: filebeat.yml
-        - name: varlog
-          mountPath: /var/log
-          readOnly: true
-      volumes:
-      - name: config
-        configMap:
-          name: filebeat-config
-      - name: varlog
-        hostPath:
-          path: /var/log
+        - name: LOG_APPLICATION
+          value: "booking-service"
+        # volumeMounts:
+      # - name: varlog
+      #   mountPath: /var/log
+# - name: filebeat
+#   image: docker.elastic.co/beats/filebeat:8.13.4
+#   args: ["-c", "/etc/filebeat.yml", "-e"]
+#   volumeMounts:
+#   - name: config
+#     mountPath: /etc/filebeat.yml
+#     subPath: filebeat.yml
+#   - name: varlog
+#     mountPath: /var/log
+#     readOnly: true
+# volumes:
+# - name: config
+#   configMap:
+#     name: filebeat-config
+# - name: varlog
+#   hostPath:
+#     path: /var/log
 

@@ -5,7 +5,7 @@ metadata:
 data:
   logstash.conf: |
     input {
-      beats {
+      tcp {
         port => 5044
       }
     }
@@ -15,7 +15,7 @@ data:
         hosts => ["http://elasticsearch:9200"]
         user => "elastic"
         password => "changeme"
-        index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+        index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
       }
       stdout { codec => rubydebug }
     }
