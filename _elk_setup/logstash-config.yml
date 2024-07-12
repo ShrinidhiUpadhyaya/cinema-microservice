@@ -7,6 +7,17 @@ data:
     input {
       tcp {
         port => 5044
+        codec => json_lines
+      }
+    }
+
+    filter {
+        if [application] == "movies-service" {
+        drop { }
+      }
+
+        if [application] == "catalog-service" {
+        drop { }
       }
     }
 
