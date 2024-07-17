@@ -2,11 +2,7 @@ const os = require("os");
 const process = require("process");
 const winston = require("winston");
 
-const application = {
-  name: null,
-  description: null,
-  metadata: null,
-};
+const applicationData = {};
 
 const metrics = {
   system: os.hostname(),
@@ -18,12 +14,18 @@ const metrics = {
 };
 
 const init = (input) => {
-  application.name = input?.name;
-  application.description = input?.description;
-  application.metadata = input?.metadata;
+  try {
+    applicationData.name = input?.name;
+    applicationData.description = input?.description;
+    applicationData.metadata = input?.metadata;
 
-  logStart();
-  handleErrorSignals();
+    logStart();
+    handleErrorSignals();
+    return 0;
+  } catch (err) {
+    console.error("Logger initialization failed:", err);
+    return -1;
+  }
 };
 
 const logger = winston.createLogger({
@@ -33,30 +35,34 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   defaultMeta: {
-    application: application?.name,
+    application: applicationData.name,
     system: os.hostname(),
   },
   transports: [
     // new winston.transports.Console(),
     new winston.transports.File({
       //path to log file
-      filename: "/var/log/app.log",
+      filename: "/var/log/booking-service/app.log",
       level: "debug",
     }),
   ],
 });
 
 const logStart = () => {
-  logger.info("Application Start", {
-    application: application,
+  logger.info("---- APPLICATION INIT ----", {
+    application: applicationData?.name,
+    description: applicationData?.description,
+    metadata: applicationData?.metadata,
     metrics: metrics,
   });
 };
 
 const logShutdown = (signal) => {
   return () => {
-    logger.info(`Application Shutdown ${signal}`, {
-      application: application,
+    logger.error(`Application Shutdown ${signal}`, {
+      application: applicationData?.name,
+      description: applicationData?.description,
+      metadata: applicationData?.metadata,
       metrics: metrics,
       reason: signal,
       category: "Shutdown",
@@ -66,8 +72,8 @@ const logShutdown = (signal) => {
 
 const logException = (exception) => {
   return () => {
-    logger.info(`${exception}`, {
-      application: application?.name,
+    logger.error(`${exception}`, {
+      application: applicationData?.name,
       category: "Exception",
     });
   };
@@ -75,8 +81,8 @@ const logException = (exception) => {
 
 const logRejection = (rejection) => {
   return () => {
-    logger.warn(`${rejection}`, {
-      application: application?.name,
+    logger.error(`${rejection}`, {
+      application: applicationData?.name,
       category: "Rejection",
     });
   };
@@ -84,8 +90,8 @@ const logRejection = (rejection) => {
 
 const logWarning = (warning) => {
   return () => {
-    logger.info(`${warning.message}`, {
-      application: application?.name,
+    logger.error(`${warning.message}`, {
+      application: applicationData?.name,
       category: "Warning",
     });
   };
@@ -127,7 +133,7 @@ const apiLogger = (req, res, next) => {
 
   logger.info(`${req.method} ${req.originalUrl}`, {
     category: "Request",
-    application: application?.name,
+    application: applicationData?.name,
   });
 
   res.on("finish", () => {
@@ -136,13 +142,13 @@ const apiLogger = (req, res, next) => {
     if (res.statusCode === 200) {
       logger.info(`${req.method} ${req.originalUrl}`, {
         category: "Success",
-        application: application?.name,
+        application: applicationData?.name,
       });
     }
 
     logger.info(`${req.method} ${req.originalUrl}`, {
       category: "Finish",
-      application: application?.name,
+      application: applicationData?.name,
     });
   });
 
@@ -152,7 +158,7 @@ const apiLogger = (req, res, next) => {
 const apiErrorLogger = (err, req, res, next) => {
   logger.info(`${req.method} ${req.originalUrl}`, {
     category: "Error",
-    application: application?.name,
+    application: applicationData?.name,
     reason: err.message,
     user: {
       ip: req.ip,

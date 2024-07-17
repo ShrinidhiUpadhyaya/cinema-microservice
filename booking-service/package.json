@@ -44,6 +44,7 @@
     "mongodb": "^6.6.2",
     "morgan": "^1.7.0",
     "spdy": "^3.4.4",
-    "supertest": "^3.0.0"
+    "supertest": "^3.0.0",
+    "winston": "^3.13.1"
   }
 }

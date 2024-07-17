@@ -8,7 +8,7 @@ data:
     - type: log
       enabled: true
       paths:
-        - /var/log/app.log
+        - /var/log/booking-service/app.log
       scan_frequency: 10s
       close_inactive: 5m
       ignore_older: 24h
@@ -74,7 +74,7 @@ spec:
           value: "http://nginx-service"
         volumeMounts:
         - name: varlog
-          mountPath: /var/log
+          mountPath: /var/log/booking-service
       - name: filebeat
         image: docker.elastic.co/beats/filebeat:8.13.4
         args: ["-c", "/etc/filebeat.yml", "-e"]
@@ -83,7 +83,7 @@ spec:
           mountPath: /etc/filebeat.yml
           subPath: filebeat.yml
         - name: varlog
-          mountPath: /var/log
+          mountPath: /var/log/booking-service
           readOnly: true
       volumes:
       - name: config
@@ -91,5 +91,5 @@ spec:
           name: filebeat-config
       - name: varlog
         hostPath:
-          path: /var/log
+          path: /var/log/booking-service
 
