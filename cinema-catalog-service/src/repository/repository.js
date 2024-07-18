@@ -1,4 +1,5 @@
 "use strict";
+const { logger } = require("../config/logger");
 
 const repository = (connection) => {
   const { db, ObjectID } = connection;
@@ -91,6 +92,7 @@ const repository = (connection) => {
   };
 
   const disconnect = () => {
+    logger.info("db.disconnect");
     db.close();
   };
 
@@ -103,8 +105,12 @@ const repository = (connection) => {
 };
 
 const connect = (connection) => {
+  logger.info("repository connect");
+
   return new Promise((resolve, reject) => {
     if (!connection) {
+      logger.error("connection db not supplied!");
+
       reject(new Error("connection db not supplied!"));
     }
     resolve(repository(connection));

@@ -4,45 +4,46 @@ const server = require("./server/server");
 const repository = require("./repository/repository");
 const config = require("./config/");
 const mediator = new EventEmitter();
+const logger = require("./config/logger");
 
-console.log("--- Cinemas Catalog Service ---");
-console.log("Connecting to cinemas catalog repository...");
-
-process.on("uncaughtException", (err) => {
-  console.error("Unhandled Exception", err);
+const loggerInit = logger.init({
+  name: "catalog-service",
 });
 
-process.on("uncaughtRejection", (err, promise) => {
-  console.error("Unhandled Rejection", err);
-});
+if (loggerInit == 0) {
+  mediator.on("db.ready", (db) => {
+    let rep;
+    repository
+      .connect({ db, ObjectID: config.ObjectID })
+      .then((repo) => {
+        rep = repo;
+        logger.info("configuration settings", {
+          serverSettings: config.serverSettings,
+          dbSettings: config.dbSettings,
+          db: config.db,
+        });
 
-mediator.on("db.ready", (db) => {
-  let rep;
-  repository
-    .connect({ db, ObjectID: config.ObjectID })
-    .then((repo) => {
-      console.log("Connected. Starting Server");
-      rep = repo;
-      return server.start({
-        port: config.serverSettings.port,
-        ssl: config.serverSettings.ssl,
-        repo,
+        return server.start({
+          port: config.serverSettings.port,
+          ssl: config.serverSettings.ssl,
+          repo,
+        });
+      })
+      .then((app) => {
+        logger.logger.info(
+          `Server started succesfully, running on port: ${config.serverSettings.port} `
+        );
+        app.on("close", () => {
+          rep.disconnect();
+        });
       });
-    })
-    .then((app) => {
-      console.log(
-        `Server started succesfully, running on port: ${config.serverSettings.port}.`
-      );
-      app.on("close", () => {
-        rep.disconnect();
-      });
-    });
-});
+  });
 
-mediator.on("db.error", (err) => {
-  console.error(err);
-});
+  mediator.on("db.error", (err) => {
+    console.error(err);
+  });
 
-config.db.connect(config.dbSettings, mediator);
+  config.db.connect(config.dbSettings, mediator);
 
-mediator.emit("boot.ready");
+  mediator.emit("boot.ready");
+}

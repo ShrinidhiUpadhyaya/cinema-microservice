@@ -1,10 +1,9 @@
 "use strict";
 const status = require("http-status");
-const { logger, errorLogger, init } = require("../config/logger");
+const { apiLogger, apiErrorLogger } = require("../config/logger");
 
 module.exports = ({ repo }, app) => {
-  init("payment-service");
-  app.use(logger);
+  app.use(apiLogger);
 
   app.post("/payment/makePurchase", (req, res, next) => {
     const { validate } = req.container.cradle;
@@ -28,5 +27,5 @@ module.exports = ({ repo }, app) => {
       .catch(next);
   });
 
-  app.use(errorLogger);
+  app.use(apiErrorLogger);
 };

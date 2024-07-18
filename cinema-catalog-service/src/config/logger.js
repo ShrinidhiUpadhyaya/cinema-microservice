@@ -42,7 +42,7 @@ const logger = winston.createLogger({
     // new winston.transports.Console(),
     new winston.transports.File({
       //path to log file
-      filename: "/var/log/payment-service/app.log",
+      filename: "/var/log/catalog-service/app.log",
       level: "debug",
     }),
   ],
