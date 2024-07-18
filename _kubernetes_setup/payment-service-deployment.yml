@@ -1,4 +1,28 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+    - type: log
+      enabled: true
+      paths:
+        - /var/log/payment-service/app.log
+      scan_frequency: 10s
+      close_inactive: 5m
+      ignore_older: 24h
+      clean_inactive: 72h
+      fields:
+      tag: count.format1
+      fields_under_root: true
+
+    output.logstash:
+      hosts: ["logstash-service:5044"]
+
+
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: payment-service
@@ -47,6 +71,33 @@ spec:
         - name: PORT
           value: "3001"
         - name: STRIPE_SECRET
-          value: "sk_test_51PMT2AP5AkwyiGFaJ2dAZUr2sBus8N2KrNjYwgGt4hrnYWWh1vkr0fQtUCEPXEM68nlMPdQLUrgA1PZOTt0JajWm00UdZ3AuW7"
+          valueFrom:
+            secretKeyRef:
+              name: stripe-secrets
+              key: stripe_secret
         - name: STRIPE_PUBLIC
-          value: "pk_test_51PMT2AP5AkwyiGFam5qqmNtdHarUsue9X6W1KhzzWKME94UpJ5w1NCrIMhzT5h690iAd9sv06MSfQHtizP5UJhc6008OPSlYgq"
+          valueFrom:
+            secretKeyRef:
+              name: stripe-secrets
+              key: stripe_public
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log/payment-service
+      - name: filebeat
+        image: docker.elastic.co/beats/filebeat:8.13.4
+        args: ["-c", "/etc/filebeat.yml", "-e"]
+        volumeMounts:
+        - name: config
+          mountPath: /etc/filebeat.yml
+          subPath: filebeat.yml
+        - name: varlog
+          mountPath: /var/log/payment-service
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          name: filebeat-config
+      - name: varlog
+        hostPath:
+          path: /var/log/payment-service
+
