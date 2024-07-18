@@ -21,15 +21,15 @@ function initDI(
         notificationService: asValue(services.notificationService),
       });
 
-      mediator.emit("di.ready", container);
-    });
+      logger.info("configuration settings", {
+        serverSettings: serverSettings,
+        dbSettings: dbSettings,
+        database: database,
+        models: models,
+        services: services,
+      });
 
-    logger.info("configuration settings", {
-      serverSettings: serverSettings,
-      dbSettings: dbSettings,
-      database: database,
-      models: models,
-      services: services,
+      mediator.emit("di.ready", container);
     });
 
     mediator.on("db.error", (err) => {
