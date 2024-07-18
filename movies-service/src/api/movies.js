@@ -1,8 +1,11 @@
 "use strict";
 const status = require("http-status");
+const { apiLogger, apiErrorLogger } = require("../config/logger");
 
 module.exports = (app, options) => {
   const { repo } = options;
+
+  app.use(apiLogger);
 
   app.get("/movies", (req, res, next) => {
     repo
@@ -30,4 +33,6 @@ module.exports = (app, options) => {
       })
       .catch(next);
   });
+
+  app.use(apiErrorLogger);
 };
