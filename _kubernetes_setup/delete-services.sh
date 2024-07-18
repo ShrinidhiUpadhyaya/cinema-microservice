@@ -2,6 +2,7 @@
 echo Deleting Kubernetes resources...
 
 kubectl delete -f secrets-deployment.yml
+kubectl delete -f catalog-service-deployment.yml
 kubectl delete -f nginx-service-deployment.yml
 kubectl delete -f nginx-configmap-deployment.yml
 kubectl delete -f booking-service-deployment.yml
