@@ -82,8 +82,8 @@ const connect = (connection) => {
   logger.info("repository connect");
 
   return new Promise((resolve, reject) => {
-    logger.error("connection db not supplied!");
     if (!connection) {
+      logger.error("connection db not supplied!");
       reject(new Error("connection db not supplied!"));
     }
     resolve(repository(connection));

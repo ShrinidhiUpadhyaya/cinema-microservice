@@ -16,8 +16,16 @@ data:
         server payment-service:80;
       }
 
-       upstream notification-service {
+      upstream notification-service {
         server notification-service:80;
+      }
+
+      upstream catalog-service {
+        server catalog-service:80;
+      }
+
+      upstream movies-service {
+        server movies-service:80;
       }
 
       server {
@@ -38,8 +46,24 @@ data:
           proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-         location /notification/sendEmail {
+        location /notification/sendEmail {
           proxy_pass http://notification-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /cinemas {
+          proxy_pass http://catalog-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /movies {
+          proxy_pass http://movies-service;
           proxy_set_header Host $host;
           proxy_set_header X-Real-IP $remote_addr;
           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

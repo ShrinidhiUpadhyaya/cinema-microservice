@@ -18,9 +18,9 @@ if (loggerInit == 0) {
       .connect(db)
       .then((repo) => {
         rep = repo;
-        logger.info("configuration settings", {
-          serverSettings: config.serverSettings,
-          dbSettings: config.dbSettings,
+        logger.logger.info("configuration settings", {
+          serverSettings: config?.serverSettings,
+          dbSettings: config?.dbSettings,
         });
         return server.start({
           port: config.serverSettings.port,
