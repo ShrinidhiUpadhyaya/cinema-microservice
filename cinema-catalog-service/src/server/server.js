@@ -2,7 +2,8 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const api = require("../api/cinema-catalog");
-const { logger } = require("../config/logger");
+const { getLogger } = require("../config/logger");
+const logger = getLogger();
 
 const start = (options) => {
   return new Promise((resolve, reject) => {
