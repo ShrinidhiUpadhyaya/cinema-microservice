@@ -3,7 +3,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const spdy = require("spdy");
 const api = require("../api/movies");
-const { logger } = require("../config/logger");
+const { getLogger } = require("../config/logger");
+const logger = getLogger();
 
 const start = (options) => {
   return new Promise((resolve, reject) => {
