@@ -4,7 +4,8 @@ const helmet = require("helmet");
 const bodyparser = require("body-parser");
 const cors = require("cors");
 const _api = require("../api/notification");
-const { logger } = require("../config/logger");
+const { getLogger } = require("../config/logger");
+const logger = getLogger();
 
 const start = (container) => {
   return new Promise((resolve, reject) => {

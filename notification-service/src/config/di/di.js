@@ -1,7 +1,8 @@
 const { createContainer, asValue } = require("awilix");
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
-const { logger } = require("../logger");
+const { getLogger } = require("../logger");
+const logger = getLogger();
 
 function initDI({ serverSettings, models, smtpSettings }, mediator) {
   mediator.once("init", () => {

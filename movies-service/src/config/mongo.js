@@ -1,5 +1,6 @@
 const { MongoClient } = require("mongodb");
-const { logger } = require("./logger");
+const { getLogger } = require("./logger");
+const logger = getLogger();
 
 const getMongoURL = (options) => {
   const url = options.servers.reduce(
