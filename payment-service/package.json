@@ -49,6 +49,7 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "spdy": "^3.4.4",
     "stripe": "^15.8.0",
-    "winston": "^3.13.0"
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }

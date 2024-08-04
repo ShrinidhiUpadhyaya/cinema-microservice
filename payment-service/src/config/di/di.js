@@ -1,6 +1,7 @@
 const { createContainer, asValue } = require("awilix");
 const stripe = require("stripe");
-const { logger } = require("../logger");
+const { getLogger } = require("../logger");
+const logger = getLogger();
 
 function initDI(
   { serverSettings, dbSettings, database, models, stripeSettings },
