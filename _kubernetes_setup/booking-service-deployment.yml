@@ -8,7 +8,7 @@ data:
     - type: log
       enabled: true
       paths:
-        - /var/log/booking-service/app.log
+        - /var/log/booking-service/app-*.log
       scan_frequency: 10s
       close_inactive: 5m
       ignore_older: 24h

@@ -1,8 +1,11 @@
 const os = require("os");
 const process = require("process");
 const winston = require("winston");
+require("winston-daily-rotate-file");
 
-const applicationData = {};
+let applicationData = {};
+let fileRotateTransport;
+const logger = { logger: null };
 
 const metrics = {
   system: os.hostname(),
@@ -13,12 +16,59 @@ const metrics = {
   uptime: process.uptime(),
 };
 
-const init = (input) => {
-  try {
-    applicationData.name = input?.name;
-    applicationData.description = input?.description;
-    applicationData.metadata = input?.metadata;
+function initApplicationData(values) {
+  applicationData = {
+    name: values.name,
+    description: values.description,
+    metadata: values.metadata,
+    level: values.level,
+  };
+}
 
+function initLogRotationData(values) {
+  fileRotateTransport = new winston.transports.DailyRotateFile({
+    level: applicationData.level,
+    filename: values.filename
+      ? `${values.filename}-%DATE%.log`
+      : "app-%DATE%.log",
+    datePattern: values.datePattern ?? "YYYY-MM-DD",
+    maxFiles: values.maxFiles ?? "14d",
+  });
+}
+
+function getTransport() {
+  if (fileRotateTransport) {
+    return fileRotateTransport;
+  } else if (applicationData?.filename) {
+    return new winston.transports.File({
+      filename: applicationData.filename,
+      level: applicationData.level,
+    });
+  } else {
+    return new winston.transports.Console();
+  }
+}
+
+function initLogger() {
+  logger.logger = winston.createLogger({
+    level: applicationData.level ?? "debug",
+    format: winston.format.combine(
+      winston.format.timestamp(),
+      winston.format.json()
+    ),
+    defaultMeta: {
+      application: applicationData.name,
+      system: os.hostname(),
+    },
+    transports: getTransport(),
+  });
+}
+
+const init = ({ applicationData, logRotationData }) => {
+  try {
+    applicationData && initApplicationData(applicationData);
+    logRotationData && initLogRotationData(logRotationData);
+    initLogger();
     logStart();
     handleErrorSignals();
     return 0;
@@ -28,28 +78,8 @@ const init = (input) => {
   }
 };
 
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  defaultMeta: {
-    application: applicationData.name,
-    system: os.hostname(),
-  },
-  transports: [
-    // new winston.transports.Console(),
-    new winston.transports.File({
-      //path to log file
-      filename: "/var/log/booking-service/app.log",
-      level: "debug",
-    }),
-  ],
-});
-
 const logStart = () => {
-  logger.info("---- APPLICATION INIT ----", {
+  logger.logger.info("---- APPLICATION INIT ----", {
     application: applicationData?.name,
     description: applicationData?.description,
     metadata: applicationData?.metadata,
@@ -59,7 +89,7 @@ const logStart = () => {
 
 const logShutdown = (signal) => {
   return () => {
-    logger.error(`Application Shutdown ${signal}`, {
+    logger.logger.error(`Application Shutdown ${signal}`, {
       application: applicationData?.name,
       description: applicationData?.description,
       metadata: applicationData?.metadata,
@@ -72,7 +102,7 @@ const logShutdown = (signal) => {
 
 const logException = (exception) => {
   return () => {
-    logger.error(`${exception}`, {
+    logger.logger.error(`${exception}`, {
       application: applicationData?.name,
       category: "Exception",
     });
@@ -81,7 +111,7 @@ const logException = (exception) => {
 
 const logRejection = (rejection) => {
   return () => {
-    logger.error(`${rejection}`, {
+    logger.logger.error(`${rejection}`, {
       application: applicationData?.name,
       category: "Rejection",
     });
@@ -90,7 +120,7 @@ const logRejection = (rejection) => {
 
 const logWarning = (warning) => {
   return () => {
-    logger.error(`${warning.message}`, {
+    logger.logger.error(`${warning.message}`, {
       application: applicationData?.name,
       category: "Warning",
     });
@@ -131,7 +161,7 @@ const handleErrorSignals = () => {
 const apiLogger = (req, res, next) => {
   const start = Date.now();
 
-  logger.info(`${req.method} ${req.originalUrl}`, {
+  logger.logger.info(`${req.method} ${req.originalUrl}`, {
     category: "Request",
     application: applicationData?.name,
   });
@@ -140,13 +170,13 @@ const apiLogger = (req, res, next) => {
     const duration = Date.now() - start;
 
     if (res.statusCode === 200) {
-      logger.info(`${req.method} ${req.originalUrl}`, {
+      logger.logger.info(`${req.method} ${req.originalUrl}`, {
         category: "Success",
         application: applicationData?.name,
       });
     }
 
-    logger.info(`${req.method} ${req.originalUrl}`, {
+    logger.logger.info(`${req.method} ${req.originalUrl}`, {
       category: "Finish",
       application: applicationData?.name,
     });
@@ -156,7 +186,7 @@ const apiLogger = (req, res, next) => {
 };
 
 const apiErrorLogger = (err, req, res, next) => {
-  logger.info(`${req.method} ${req.originalUrl}`, {
+  logger.logger.info(`${req.method} ${req.originalUrl}`, {
     category: "Error",
     application: applicationData?.name,
     reason: err.message,
@@ -176,4 +206,13 @@ const apiErrorLogger = (err, req, res, next) => {
   next(err);
 };
 
-module.exports = { init, logger, apiLogger, apiErrorLogger };
+function getLogger() {
+  return logger?.logger;
+}
+
+module.exports = {
+  init,
+  apiLogger,
+  apiErrorLogger,
+  getLogger,
+};

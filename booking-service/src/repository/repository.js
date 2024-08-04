@@ -1,6 +1,7 @@
 "use strict";
 
-const { logger } = require("../config/logger");
+const { getLogger } = require("../config/logger");
+const logger = getLogger();
 
 const repository = (container) => {
   const { database: db } = container.cradle;

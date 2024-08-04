@@ -1,5 +1,6 @@
 const { createContainer, asValue } = require("awilix");
-const { logger } = require("../logger");
+const { getLogger } = require("../logger");
+const logger = getLogger();
 
 function initDI(
   { serverSettings, dbSettings, database, models, services },
