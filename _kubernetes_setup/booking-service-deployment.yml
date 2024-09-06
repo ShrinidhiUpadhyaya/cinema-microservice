@@ -1,28 +1,4 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: filebeat-config
-data:
-  filebeat.yml: |
-    filebeat.inputs:
-    - type: log
-      enabled: true
-      paths:
-        - /var/log/app.log
-      scan_frequency: 10s
-      close_inactive: 5m
-      ignore_older: 24h
-      clean_inactive: 72h
-      fields:
-      tag: count.format1
-      fields_under_root: true
-
-    output.logstash:
-      hosts: ["logstash-service:5044"]
-
-
----
-apiVersion: v1
 kind: Service
 metadata:
   name: booking-service
@@ -74,24 +50,4 @@ spec:
           value: "http://nginx-service"
         - name: LOG_APPLICATION
           value: "booking-service"
-        # volumeMounts:
-      # - name: varlog
-      #   mountPath: /var/log
-# - name: filebeat
-#   image: docker.elastic.co/beats/filebeat:8.13.4
-#   args: ["-c", "/etc/filebeat.yml", "-e"]
-#   volumeMounts:
-#   - name: config
-#     mountPath: /etc/filebeat.yml
-#     subPath: filebeat.yml
-#   - name: varlog
-#     mountPath: /var/log
-#     readOnly: true
-# volumes:
-# - name: config
-#   configMap:
-#     name: filebeat-config
-# - name: varlog
-#   hostPath:
-#     path: /var/log
 
