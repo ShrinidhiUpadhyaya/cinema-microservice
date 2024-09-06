@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: filebeat-config
+  name: filebeat-config-movies
 data:
   filebeat.yml: |
     filebeat.inputs:
     - type: log
       enabled: true
       paths:
-        - /var/log/movies-service/app.log
+        - /var/log/movies-service/*.log
       scan_frequency: 10s
       close_inactive: 5m
       ignore_older: 24h
@@ -73,23 +73,23 @@ spec:
         - name: NGINX_SERVICE
           value: "http://nginx-service"
         volumeMounts:
-        - name: varlog
+        - name: log-path-movies
           mountPath: /var/log/movies-service
       - name: filebeat
         image: docker.elastic.co/beats/filebeat:8.13.4
         args: ["-c", "/etc/filebeat.yml", "-e"]
         volumeMounts:
-        - name: config
+        - name: filebeat-config-volume-movies
           mountPath: /etc/filebeat.yml
           subPath: filebeat.yml
-        - name: varlog
+        - name: log-path-movies
           mountPath: /var/log/movies-service
           readOnly: true
       volumes:
-      - name: config
+      - name: filebeat-config-volume-movies
         configMap:
-          name: filebeat-config
-      - name: varlog
+          name: filebeat-config-movies
+      - name: log-path-movies
         hostPath:
           path: /var/log/movies-service
 

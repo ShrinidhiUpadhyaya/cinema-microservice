@@ -4,10 +4,7 @@ const { init } = require("./config/logger");
 init({
   applicationData: {
     name: "catalog-service",
-    filePath: "/var/log/catalog-service/app",
-  },
-  logRotationData: {
-    filename: "/var/log/catalog-service/app",
+    filename: "/var/log/catalog-service/app.log",
   },
 });
 

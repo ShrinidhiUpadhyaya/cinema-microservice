@@ -4,10 +4,7 @@ const { init } = require("./config/logger");
 init({
   applicationData: {
     name: "booking-service",
-    filePath: "/var/log/booking-service3/app",
-  },
-  logRotationData: {
-    filename: process.env.LOGGER_FILE_PATH,
+    filename: "/var/log/booking-service/app.log",
   },
 });
 

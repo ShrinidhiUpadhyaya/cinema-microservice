@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: filebeat-config
+  name: filebeat-config-notification
 data:
   filebeat.yml: |
     filebeat.inputs:
     - type: log
       enabled: true
       paths:
-        - /var/log/notification-service/app.log
+        - /var/log/notification-service/*.log
       scan_frequency: 10s
       close_inactive: 5m
       ignore_older: 24h
@@ -58,23 +58,23 @@ spec:
         - name: PORT
           value: "3002"
         volumeMounts:
-        - name: varlog
+        - name: log-path-notification
           mountPath: /var/log/notification-service
       - name: filebeat
         image: docker.elastic.co/beats/filebeat:8.13.4
         args: ["-c", "/etc/filebeat.yml", "-e"]
         volumeMounts:
-        - name: config
+        - name: filebeat-config-volume-notification
           mountPath: /etc/filebeat.yml
           subPath: filebeat.yml
-        - name: varlog
+        - name: log-path-notification
           mountPath: /var/log/notification-service
           readOnly: true
       volumes:
-      - name: config
+      - name: filebeat-config-volume-notification
         configMap:
-          name: filebeat-config
-      - name: varlog
+          name: filebeat-config-notification
+      - name: log-path-notification
         hostPath:
           path: /var/log/notification-service
 

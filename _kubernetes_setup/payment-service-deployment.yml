@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: filebeat-config
+  name: filebeat-config-payment
 data:
   filebeat.yml: |
     filebeat.inputs:
     - type: log
       enabled: true
       paths:
-        - /var/log/payment-service/app.log
+        - /var/log/payment-service/app*.log
       scan_frequency: 10s
       close_inactive: 5m
       ignore_older: 24h
@@ -19,7 +19,6 @@ data:
 
     output.logstash:
       hosts: ["logstash-service:5044"]
-
 
 ---
 apiVersion: v1
@@ -81,23 +80,23 @@ spec:
               name: stripe-secrets
               key: stripe_public
         volumeMounts:
-        - name: varlog
+        - name: log-path-payment
           mountPath: /var/log/payment-service
       - name: filebeat
         image: docker.elastic.co/beats/filebeat:8.13.4
         args: ["-c", "/etc/filebeat.yml", "-e"]
         volumeMounts:
-        - name: config
+        - name: filebeat-config-volume-payment
           mountPath: /etc/filebeat.yml
           subPath: filebeat.yml
-        - name: varlog
+        - name: log-path-payment
           mountPath: /var/log/payment-service
           readOnly: true
       volumes:
-      - name: config
+      - name: filebeat-config-volume-payment
         configMap:
-          name: filebeat-config
-      - name: varlog
+          name: filebeat-config-payment
+      - name: log-path-payment
         hostPath:
           path: /var/log/payment-service
 

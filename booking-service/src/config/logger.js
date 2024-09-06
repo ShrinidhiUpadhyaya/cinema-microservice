@@ -17,23 +17,26 @@ const metrics = {
 };
 
 function initApplicationData(values) {
-  applicationData = {
-    name: values.name,
-    description: values.description,
-    metadata: values.metadata,
-    level: values.level,
-  };
+  if (values) {
+    applicationData = {
+      name: values.name,
+      description: values.description,
+      metadata: values.metadata,
+      level: values.level,
+      filename: values.filename,
+    };
+  }
 }
 
 function initLogRotationData(values) {
-  fileRotateTransport = new winston.transports.DailyRotateFile({
-    level: applicationData.level,
-    filename: values.filename
-      ? `${values.filename}-%DATE%.log`
-      : "app-%DATE%.log",
-    datePattern: values.datePattern ?? "YYYY-MM-DD",
-    maxFiles: values.maxFiles ?? "14d",
-  });
+  if (values?.filename) {
+    fileRotateTransport = new winston.transports.DailyRotateFile({
+      level: applicationData.level,
+      filename: values.filename,
+      datePattern: values.datePattern ?? "YYYY-MM-DD",
+      maxFiles: values.maxFiles ?? "14d",
+    });
+  }
 }
 
 function getTransport() {
@@ -66,8 +69,8 @@ function initLogger() {
 
 const init = ({ applicationData, logRotationData }) => {
   try {
-    applicationData && initApplicationData(applicationData);
-    logRotationData && initLogRotationData(logRotationData);
+    initApplicationData(applicationData);
+    initLogRotationData(logRotationData);
     initLogger();
     logStart();
     handleErrorSignals();
