@@ -1,4 +1,46 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+data:
+  logstash.conf: |
+    input {
+      tcp {
+        port => 5044
+        codec => json_lines
+      }
+    }
+
+    filter {
+        if [application] == "movies-service" {
+        drop { }
+      }
+
+        if [application] == "catalog-service" {
+        drop { }
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch:9200"]
+        user => "elastic"
+        password => "changeme"
+        index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
+        codec => json_lines
+        #-------------------------------- Enable compression --------------------------------
+        #Values between 1 to 9. 0 will disable compression
+        #compression_level => 3
+      }
+      stdout { codec => rubydebug }
+    }
+  logstash.yml: |
+    http.host: 0.0.0.0
+    node.name: logstash
+
+
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: logstash
