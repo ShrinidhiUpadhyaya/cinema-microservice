@@ -19,6 +19,11 @@ data:
       #-------------------------------- Enable compression --------------------------------
       #Values between 1 to 9. 0 will disable compression
       #compression_level: 3
+
+    #-------------------------------- Enable For Kafka --------------------------------
+    output.kafka:
+      hosts: ["kafka-service:9092"]
+      topic: "cinema-microservice-logs"
 ---
 apiVersion: v1
 kind: Service
