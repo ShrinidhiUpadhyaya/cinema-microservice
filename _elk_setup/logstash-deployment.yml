@@ -1,4 +1,38 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+data:
+  logstash.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+
+      #-------------------------------- Enable For Kafka --------------------------------
+      #kafka {
+        #bootstrap_servers => "kafka-service:9092"
+        #topics => ["booking-logs"]
+        #codec => json
+        #decorate_events => true
+      #}
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch:9200"]
+        user => "elastic"
+        password => "changeme"
+        index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
+      }
+      stdout { codec => rubydebug }
+    }
+  logstash.yml: |
+    http.host: 0.0.0.0
+    node.name: logstash
+
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: logstash-service
