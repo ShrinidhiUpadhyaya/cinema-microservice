@@ -7,6 +7,7 @@ data:
     input {
       beats {
         port => 5044
+        codec => json
       }
 
       #-------------------------------- Enable For Kafka --------------------------------
@@ -24,6 +25,7 @@ data:
         user => "elastic"
         password => "changeme"
         index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
+        codec => json
       }
       stdout { codec => rubydebug }
     }
