@@ -30,12 +30,7 @@ function initApplicationData(values) {
 
 function initLogRotationData(values) {
   if (values?.filename) {
-    fileRotateTransport = new winston.transports.DailyRotateFile({
-      level: applicationData.level,
-      filename: values.filename,
-      datePattern: values.datePattern ?? "YYYY-MM-DD",
-      maxFiles: values.maxFiles ?? "14d",
-    });
+    fileRotateTransport = new winston.transports.DailyRotateFile({ ...values });
   }
 }
 

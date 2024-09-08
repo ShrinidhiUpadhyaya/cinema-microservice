@@ -21,9 +21,9 @@ data:
       #compression_level: 3
 
     #-------------------------------- Enable For Kafka --------------------------------
-    output.kafka:
-      hosts: ["kafka-service:9092"]
-      topic: "cinema-microservice-logs"
+    #output.kafka:
+      #hosts: ["kafka-service:9092"]
+      #topic: "cinema-microservice-logs"
 ---
 apiVersion: v1
 kind: Service

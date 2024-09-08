@@ -6,6 +6,13 @@ init({
     name: "booking-service",
     filename: "/var/log/booking-service/app.log",
   },
+
+  // -------------------------------- Enable For LogRotation --------------------------------
+  // logRotationData: {
+  //   filename: "/var/log/booking-service/app-%DATE%.log",
+  //   datePattern: "YYYY-MM-DD-HH-mm",
+  //   frequency: "2m",
+  // },
 });
 
 const { getLogger } = require("./config/logger");
