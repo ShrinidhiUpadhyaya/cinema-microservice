@@ -14,6 +14,12 @@ data:
       ignore_older: 24h
       clean_inactive: 72h
 
+    # Add Docker host metadata
+    processors:
+    # Add general host metadata
+      - add_host_metadata:
+          netinfo.enabled: true  # Optional: adds network information like IP addresses
+
     output.logstash:
       hosts: ["logstash-service:5044"]
       #-------------------------------- Enable compression --------------------------------
@@ -95,4 +101,3 @@ spec:
       - name: log-path-booking
         hostPath:
           path: /var/log/booking-service
-
