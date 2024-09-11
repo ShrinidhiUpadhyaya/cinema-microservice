@@ -22,6 +22,26 @@ spec:
     requests:
       storage: 256Mi
 
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-config
+data:
+  mongod.conf: |
+    storage:
+      dbPath: /data/db
+    systemLog:
+      destination: file
+      path: /var/log/mongodb/mongod.log
+      logAppend: true
+    net:
+      port: 27017
+      bindIp: 0.0.0.0
+    security:
+      authorization: enabled
+
 ---
 apiVersion: v1
 kind: Service
@@ -49,9 +69,22 @@ spec:
       labels:
         app: mongodb
     spec:
+      initContainers:
+      - name: init-chmod-data
+        image: busybox
+        command: ["sh", "-c", "chmod -R 777 /var/log/mongodb && mkdir -p /usr/share/filebeat/data && chmod -R 777 /usr/share/filebeat/data"]
+        volumeMounts:
+        - name: mongodb-logs
+          mountPath: /var/log/mongodb
+        - name: filebeat-data
+          mountPath: /usr/share/filebeat/data
       containers:
       - name: mongodb
         image: mongo:latest
+        command:
+        - mongod
+        - --config
+        - /etc/mongo/mongod.conf
         ports:
         - containerPort: 27017
         env:
@@ -68,28 +101,50 @@ spec:
         volumeMounts:
         - name: data-volume
           mountPath: /data
-        - name: init-data
-          mountPath: /data/mockData
-        - name: init-script
-          mountPath: /docker-entrypoint-initdb.d
+        - name: mongodb-logs
+          mountPath: /var/log/mongodb
+        - name: mongo-config
+          mountPath: /etc/mongo
+      - name: filebeat
+        image: docker.elastic.co/beats/filebeat:8.13.4
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        volumeMounts:
+        - name: mongodb-logs
+          mountPath: /var/log/mongodb
+        - name: filebeat-config
+          mountPath: /usr/share/filebeat/filebeat.yml
+          subPath: filebeat.yml
+        - name: filebeat-data
+          mountPath: /usr/share/filebeat/data
       volumes:
       - name: data-volume
         persistentVolumeClaim:
           claimName: mongo-pvc
-      - name: init-data
+      - name: mongodb-logs
+        emptyDir: {}
+      - name: filebeat-config
         configMap:
-          name: mongo-data
-          items:
-          - key: cinemas.json
-            path: cinemas.json
-          - key: cities.json
-            path: cities.json
-          - key: countries.json
-            path: countries.json
-          - key: movies.json
-            path: movies.json
-          - key: states.json
-            path: states.json
-      - name: init-script
+          name: filebeat-config
+      - name: mongo-config
         configMap:
-          name: mongo-init-script
+          name: mongo-config
+      - name: filebeat-data
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+data:
+  filebeat.yml: |-
+    filebeat.inputs:
+    - type: log
+      enabled: true
+      paths:
+        - /var/log/mongodb/*.log
+    output.logstash:
+      hosts: ["logstash-service:5044"]
+    logging.level: debug
