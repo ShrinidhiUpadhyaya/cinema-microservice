@@ -1,7 +1,6 @@
 "use strict";
 
-const { getLogger } = require("../config/logger");
-const logger = getLogger();
+const os = require("os");
 
 const repository = (container) => {
   const { database: db } = container.cradle;
@@ -70,7 +69,13 @@ const repository = (container) => {
   };
 
   const disconnect = () => {
-    logger.info("db.disconnect");
+    console.info({
+      application: "booking-service",
+      system: os.hostname(),
+      message: "db.disconnect",
+      timestamp: Date.now(),
+      level: "info",
+    });
     db.close();
   };
 
@@ -83,10 +88,23 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
-  logger.info("repository connect");
+  console.info({
+    application: "booking-service",
+    system: os.hostname(),
+    message: "repository connect",
+    timestamp: Date.now(),
+    level: "info",
+    values: container,
+  });
   return new Promise((resolve, reject) => {
     if (!container.resolve("database")) {
-      logger.error("connection db not supplied!");
+      console.error({
+        application: "booking-service",
+        system: os.hostname(),
+        message: "connection db not supplied!",
+        timestamp: Date.now(),
+        level: "error",
+      });
       reject(new Error("connection db not supplied!"));
     }
     resolve(repository(container));

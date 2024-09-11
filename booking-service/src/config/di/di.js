@@ -1,6 +1,5 @@
 const { createContainer, asValue } = require("awilix");
-const { getLogger } = require("../logger");
-const logger = getLogger();
+const os = require("os");
 
 function initDI(
   { serverSettings, dbSettings, database, models, services },
@@ -22,19 +21,33 @@ function initDI(
         notificationService: asValue(services.notificationService),
       });
 
-      logger.info("configuration settings", {
-        serverSettings: serverSettings,
-        dbSettings: dbSettings,
-        database: database,
-        models: models,
-        services: services,
+      console.info({
+        application: "booking-service",
+        system: os.hostname(),
+        message: "configuration settings",
+        timestamp: Date.now(),
+        level: "info",
+        values: {
+          serverSettings: serverSettings,
+          dbSettings: dbSettings,
+          database: database,
+          models: models,
+          services: services,
+        },
       });
 
       mediator.emit("di.ready", container);
     });
 
     mediator.on("db.error", (err) => {
-      logger.error("di.error", { reason: err });
+      console.error({
+        application: "booking-service",
+        system: os.hostname(),
+        message: "di.error",
+        timestamp: Date.now(),
+        level: "error",
+        reason: err,
+      });
 
       mediator.emit("di.error", err);
     });

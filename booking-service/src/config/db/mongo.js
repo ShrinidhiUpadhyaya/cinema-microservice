@@ -1,6 +1,5 @@
 const { MongoClient } = require("mongodb");
-const { getLogger } = require("../logger");
-const logger = getLogger();
+const os = require("os");
 
 const getMongoURL = (options) => {
   const url = options.servers.reduce(
@@ -27,11 +26,32 @@ const connect = (options, mediator) => {
       getMongoURL(options),
       getMongoAuthOptions(options)
     );
+
+    console.info({
+      application: "booking-service",
+      system: os.hostname(),
+      message: "db.connect",
+      timestamp: Date.now(),
+      level: "info",
+      values: {
+        options: options,
+        mongoURL: getMongoURL(options),
+        mongoAuthOptions: getMongoAuthOptions(options),
+      },
+    });
+
     client
       .connect()
       .then(() => mediator.emit("db.ready", client.db(process.env.DB)))
       .catch((err) => {
-        logger.error("db.error", { reason: err });
+        console.error({
+          application: "booking-service",
+          system: os.hostname(),
+          message: "db.error",
+          timestamp: Date.now(),
+          level: "error",
+          reason: err,
+        });
         mediator.emit("db.error", err);
       });
   });
