@@ -14,6 +14,7 @@ data:
       processors:
       - add_kubernetes_metadata:
           in_cluster: true
+      exclude_files: ['.*booking-service.*', '.*movies-service.*', '.*catalog-service.*', '.*notification-service.*', '.*payment-service.*', '.*mongodb.*']
 
     output.logstash:
       hosts: ["logstash-service.default.svc.cluster.local:5044"]

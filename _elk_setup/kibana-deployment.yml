@@ -12,6 +12,7 @@ data:
     elasticsearch.username: "kibana_system"
     elasticsearch.password: "changeme"
     elasticsearch.ssl.verificationMode: none
+    #Enable for creating rules
     #xpack.encryptedSavedObjects.encryptionKey: "1caAT90OOKFe3jY/znjGdPh0xfwwkzdqZKbByd4LRtg="
 
 ---
