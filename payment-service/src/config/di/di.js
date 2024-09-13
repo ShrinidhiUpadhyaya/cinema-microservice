@@ -30,6 +30,8 @@ function initDI(
     });
 
     mediator.on("db.error", (err) => {
+      logger.error("di.error", { reason: err });
+
       mediator.emit("di.error", err);
     });
 
