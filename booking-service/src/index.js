@@ -33,7 +33,7 @@ mediator.on("di.ready", (container) => {
     })
     .then((app) => {
       logger.info(
-        `Server started succesfully with filebeat, running on port: ${container.cradle.serverSettings.port} `
+        `Server started succesfully, running on port: ${container.cradle.serverSettings.port} `
       );
       app.on("close", () => {
         container.resolve("repo").disconnect();

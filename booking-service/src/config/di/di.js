@@ -23,11 +23,13 @@ function initDI(
       });
 
       logger.info("configuration settings", {
-        serverSettings: serverSettings,
-        dbSettings: dbSettings,
-        database: database,
-        models: models,
-        services: services,
+        values: {
+          serverSettings: serverSettings,
+          dbSettings: dbSettings,
+          database: database,
+          models: models,
+          services: services,
+        },
       });
 
       mediator.emit("di.ready", container);

@@ -27,6 +27,14 @@ const connect = (options, mediator) => {
       getMongoURL(options),
       getMongoAuthOptions(options)
     );
+
+    logger.info("db.connect", {
+      values: {
+        options: options,
+        mongoURL: getMongoURL(options),
+        mongoAuthOptions: getMongoAuthOptions(options),
+      },
+    });
     client
       .connect()
       .then(() => mediator.emit("db.ready", client.db(process.env.DB)))
