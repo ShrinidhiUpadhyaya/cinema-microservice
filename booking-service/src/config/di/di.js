@@ -6,7 +6,11 @@ function initDI(
   mediator
 ) {
   mediator.once("init", () => {
+    logger.trace("initDI: init");
+
     mediator.on("db.ready", (db) => {
+      logger.trace("initDI: db.ready");
+
       const container = createContainer();
 
       container.register({
@@ -29,14 +33,20 @@ function initDI(
         services: services,
       });
 
+      logger.trace("initDI: emit di.ready");
+
       mediator.emit("di.ready", container);
     });
 
     mediator.on("db.error", (err) => {
+      logger.trace("initDI: emit db.error");
+
       mediator.emit("di.error", err);
     });
 
     database.connect(dbSettings, mediator);
+
+    logger.trace("initDI: emit boot.ready");
 
     mediator.emit("boot.ready");
   });

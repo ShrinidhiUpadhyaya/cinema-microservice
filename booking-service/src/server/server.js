@@ -8,6 +8,7 @@ const logger = require("../config/logger");
 
 const start = (container) => {
   return new Promise((resolve, reject) => {
+    logger.trace("Starting server initialization");
     const { port } = container.resolve("serverSettings");
     const repo = container.resolve("repo");
 
@@ -28,12 +29,9 @@ const start = (container) => {
     app.use(cors());
     app.use(helmet());
     app.use((err, req, res, next) => {
-      logger.fatal(
-        {
-          reason: err,
-        },
-        "Something went wrong!"
-      );
+      logger.fatal("Something went wrong!", {
+        reason: err,
+      });
       reject(new Error("Something went wrong!, err:" + err));
       res.status(500).send("Something went wrong!");
       next();
@@ -47,6 +45,7 @@ const start = (container) => {
     api(app);
 
     const server = app.listen(port, () => resolve(server));
+    logger.trace("Exiting server start");
   });
 };
 

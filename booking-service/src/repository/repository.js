@@ -6,6 +6,12 @@ const repository = (container) => {
   const { database: db } = container.cradle;
 
   const makeBooking = (user, booking) => {
+    logger.debug("makeBooking", {
+      values: {
+        user: user,
+        booking: booking,
+      },
+    });
     return new Promise((resolve, reject) => {
       const payload = {
         city: booking.city,
@@ -23,6 +29,10 @@ const repository = (container) => {
         },
       };
 
+      logger.debug("makeBooking", {
+        payload: payload,
+      });
+
       try {
         db.collection("booking").insertOne(payload);
         resolve(payload);
@@ -35,10 +45,21 @@ const repository = (container) => {
   };
 
   const generateTicket = (paid, booking) => {
+    logger.debug("generateTicket", {
+      values: {
+        paid: paid,
+        booking: booking,
+      },
+    });
+
     return new Promise((resolve, reject) => {
       const payload = Object.assign({}, booking, {
         orderId: paid.charge.id,
         description: paid.description,
+      });
+
+      logger.debug("generateTicket", {
+        payload: payload,
       });
 
       try {
@@ -53,6 +74,9 @@ const repository = (container) => {
   };
 
   const getOrderById = (orderId) => {
+    logger.debug("getOrderById", {
+      orderId: orderId,
+    });
     return new Promise((resolve, reject) => {
       const ObjectID = container.resolve("ObjectID");
       const query = { _id: new ObjectID(orderId) };

@@ -2,6 +2,7 @@ const { MongoClient } = require("mongodb");
 const logger = require("../logger");
 
 const getMongoURL = (options) => {
+  logger.trace("getMongoURL", { values: options });
   const url = options.servers.reduce(
     (prev, cur) => prev + cur + ",",
     "mongodb://"
@@ -11,6 +12,8 @@ const getMongoURL = (options) => {
 };
 
 const getMongoAuthOptions = (options) => {
+  logger.trace("getMongoAuthOptions", { values: options });
+
   return {
     auth: {
       username: options.user,
