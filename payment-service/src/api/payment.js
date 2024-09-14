@@ -32,7 +32,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json({ paid });
       })
       .catch((err) => {
-        logger.error("Error occured", {
+        logger.debug("Error occured", {
           reason: err?.message,
           stackTrace: err?.stackTrace,
           body: req?.body,
@@ -75,7 +75,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json({ payment });
       })
       .catch((err) => {
-        logger.error("Error occured", {
+        logger.debug("Error occured", {
           reason: err?.message,
           stackTrace: err?.stackTrace,
           method: req?.method,
