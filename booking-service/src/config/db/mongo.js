@@ -27,24 +27,18 @@ const connect = (options, mediator) => {
       getMongoAuthOptions(options)
     );
 
-    logger.info(
-      {
-        options: options,
-        mongoURL: getMongoURL(options),
-        mongoAuthOptions: getMongoAuthOptions(options),
-      },
-      "db.connect"
-    );
+    logger.info("db.connect", {
+      options: options,
+      mongoURL: getMongoURL(options),
+      mongoAuthOptions: getMongoAuthOptions(options),
+    });
     client
       .connect()
       .then(() => mediator.emit("db.ready", client.db(process.env.DB)))
       .catch((err) => {
-        logger.error(
-          {
-            reason: err,
-          },
-          "db.error"
-        );
+        logger.error("db.error", {
+          reason: err,
+        });
         mediator.emit("db.error", err);
       });
   });

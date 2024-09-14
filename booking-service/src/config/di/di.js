@@ -21,16 +21,13 @@ function initDI(
         notificationService: asValue(services.notificationService),
       });
 
-      logger.info(
-        {
-          serverSettings: serverSettings,
-          dbSettings: dbSettings,
-          database: database,
-          models: models,
-          services: services,
-        },
-        "configuration settings"
-      );
+      logger.info("configuration settings", {
+        serverSettings: serverSettings,
+        dbSettings: dbSettings,
+        database: database,
+        models: models,
+        services: services,
+      });
 
       mediator.emit("di.ready", container);
     });

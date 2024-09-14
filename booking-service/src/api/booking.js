@@ -1,33 +1,32 @@
 "use strict";
 const status = require("http-status");
 const logger = require("../config/logger");
+const { v4: uuidv4 } = require("uuid");
 
 module.exports = ({ repo }, app) => {
   app.post("/booking", (req, res, next) => {
     const validate = req.container.cradle.validate;
     const paymentService = req.container.resolve("paymentService");
     const notificationService = req.container.resolve("notificationService");
+    const traceId = req.headers["x-trace-id"] || uuidv4();
+    req.headers["x-trace-id"] = traceId;
 
     const user = req?.body?.user;
     const booking = req?.body?.booking;
 
-    // make use of child logger
-    const childLogger = logger.child({
+    logger.info("Request", {
       method: req?.method,
       api: req?.originalUrl,
+      traceId: traceId,
     });
-
-    childLogger.info("Request");
 
     Promise.all([validate(user, "user"), validate(booking, "booking")])
       .then(([user, booking]) => {
         // Return Value Logging
-        childLogger.trace(
-          {
-            values: { user, booking },
-          },
-          "validation successfull"
-        );
+        logger.debug("validation successfull", {
+          values: { user, booking },
+          traceId: traceId,
+        });
         const payment = {
           userName: user.name + " " + user.lastName,
           currency: "mxn",
@@ -43,14 +42,14 @@ module.exports = ({ repo }, app) => {
         };
 
         return Promise.all([
-          paymentService(payment),
+          paymentService(payment, traceId),
           Promise.resolve(user),
           Promise.resolve(booking),
         ]);
       })
       .then(([paid, user, booking]) => {
         // Return Value Logging
-        childLogger.trace({ values: { paid, user, booking } }, "make booking");
+        logger.debug("make booking", { values: { paid, user, booking } });
 
         return Promise.all([
           repo.makeBooking(user, booking),
@@ -60,12 +59,9 @@ module.exports = ({ repo }, app) => {
       })
       .then(([booking, paid, user]) => {
         // Return Value Logging
-        childLogger.trace(
-          {
-            values: { booking, paid, user },
-          },
-          "generate ticket"
-        );
+        logger.debug("generate ticket", {
+          values: { booking, paid, user },
+        });
 
         return Promise.all([
           repo.generateTicket(paid, booking),
@@ -74,37 +70,34 @@ module.exports = ({ repo }, app) => {
       })
       .then(([ticket, user]) => {
         // Return Value Logging
-        childLogger.trace({ values: { ticket, user } }, "send notification");
+        logger.debug("send notification", { values: { ticket, user } });
 
         const payload = Object.assign({}, ticket, {
           user: { name: user.name + user.lastName, email: user.email },
         });
-        notificationService(payload);
+        notificationService(payload, traceId);
         res.status(status.OK).json(ticket);
       })
       .catch((err) => {
         // Exception Logging, Not all errors should be logged with error
-        childLogger.debug(
-          {
-            reason: err?.message,
-            stackTrace: err?.stackTrace,
-            method: req?.method,
-            api: req?.originalUrl,
-            body: req?.body,
-            params: req?.params,
-            query: req?.query,
-            headers: req?.headers,
-            statusCode: res?.status,
-            user: {
-              ip: req?.ip,
-              userAgent: req?.get("User-Agent"),
-            },
-            performance: {
-              responseTime: res?.get("X-Response Time"),
-            },
+        logger.debug("Error occured", {
+          reason: err?.message,
+          stackTrace: err?.stackTrace,
+          method: req?.method,
+          api: req?.originalUrl,
+          body: req?.body,
+          params: req?.params,
+          query: req?.query,
+          headers: req?.headers,
+          statusCode: res?.status,
+          user: {
+            ip: req?.ip,
+            userAgent: req?.get("User-Agent"),
           },
-          "Error occured"
-        );
+          performance: {
+            responseTime: res?.get("X-Response Time"),
+          },
+        });
         next(err);
       });
   });
@@ -112,22 +105,24 @@ module.exports = ({ repo }, app) => {
   app.get("/booking/verify/:orderId", (req, res, next) => {
     const orderId = req?.params?.orderId;
 
-    const childLogger = logger.child({
+    const traceId = req.headers["x-trace-id"] || uuidv4();
+    req.headers["x-trace-id"] = traceId;
+
+    logger.info("Request", {
       method: req?.method,
       api: "/booking/verify/:orderId",
       input: orderId,
+      traceId: traceId,
     });
-
-    childLogger.info("Request");
 
     repo
       .getOrderById(orderId)
       .then((order) => {
-        childLogger.trace({ values: order }, "getOrderById successfull");
+        logger.debug("getOrderById successfull", { values: order });
         res.status(status.OK).json(order);
       })
       .catch((err) => {
-        childLogger.debug("Error occured", {
+        logger.debug("Error occured", {
           reason: err?.message,
           stackTrace: err?.stackTrace,
           method: req?.method,
@@ -149,27 +144,4 @@ module.exports = ({ repo }, app) => {
         next(err);
       });
   });
-
-  // app.use((err, req, res, next) => {
-  //   logger.debug("Error occured", {
-  //     reason: err.message,
-  //     stackTrace: err.stackTrace,
-  //     method: req.method,
-  //     api: req.originalUrl,
-  //     body: req.body,
-  //     params: req.params,
-  //     query: req.query,
-  //     user: {
-  //       ip: req.ip,
-  //       userAgent: req.get("User-Agent"),
-  //     },
-  //     performance: {
-  //       responseTime: res.get("X-Response Time"),
-  //     },
-  //   });
-
-  //   res
-  //     .status(status.INTERNAL_SERVER_ERROR)
-  //     .json({ error: "Internal Server Error" });
-  // });
 };
