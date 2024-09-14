@@ -6,43 +6,33 @@ module.exports = (app, options) => {
   const { repo } = options;
 
   app.get("/movies", (req, res, next) => {
-    const childLogger = logger.child({
+    logger.info("Request", {
       method: req?.method,
       api: req?.originalUrl,
     });
 
-    childLogger.info("Request");
-
     repo
       .getAllMovies()
       .then((movies) => {
-        childLogger.trace(
-          {
-            values: movies,
-          },
-          "getAllMovies successfull"
-        );
+        logger.debug("getAllMovies successfull", {
+          values: movies,
+        });
         res.status(status.OK).json(movies);
       })
       .catch(next);
   });
 
   app.get("/movies/premieres", (req, res, next) => {
-    const childLogger = logger.child({
+    logger.info("Request", {
       method: req?.method,
       api: req?.originalUrl,
     });
-
-    childLogger.info("Request");
     repo
       .getMoviePremiers()
       .then((movies) => {
-        childLogger.trace(
-          {
-            values: movies,
-          },
-          "getMoviePremiers successfull"
-        );
+        logger.debug("getMoviePremiers successfull", {
+          values: movies,
+        });
         res.status(status.OK).json(movies);
       })
       .catch(next);
@@ -50,22 +40,18 @@ module.exports = (app, options) => {
 
   app.get("/movies/:id", (req, res, next) => {
     const id = req?.params?.id;
-    const childLogger = logger.child({
+
+    logger.info("Request", {
       method: req?.method,
       api: req?.originalUrl,
       input: id,
     });
-
-    childLogger.info("Request");
     repo
       .getMovieById(id)
       .then((movie) => {
-        childLogger.trace(
-          {
-            values: movie,
-          },
-          "getMovieById successfull"
-        );
+        logger.debug("getMovieById successfull", {
+          values: movie,
+        });
         res.status(status.OK).json(movie);
       })
       .catch(next);

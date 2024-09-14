@@ -6,20 +6,18 @@ const config = require("./config");
 const mediator = new EventEmitter();
 const logger = require("./config/logger");
 const os = require("os");
+
 logger.info("---- APPLICATION INIT ----");
 
 const handleShutdown = (err) => {
-  logger.fatal(
-    {
-      reason: err,
-      type: os?.type(),
-      cpuUsage: process?.cpuUsage(),
-      memoryUsage: process?.memoryUsage(),
-      loadAverage: os?.loadavg(),
-      uptime: process?.uptime(),
-    },
-    "Application Stopped"
-  );
+  logger.fatal("Application Stopped", {
+    reason: err,
+    type: os?.type(),
+    cpuUsage: process?.cpuUsage(),
+    memoryUsage: process?.memoryUsage(),
+    loadAverage: os?.loadavg(),
+    uptime: process?.uptime(),
+  });
 };
 
 process.on("SIGINT", handleShutdown);
@@ -39,14 +37,11 @@ mediator.on("db.ready", (db) => {
     .then((repo) => {
       rep = repo;
 
-      logger.info(
-        {
-          port: config?.serverSettings?.port,
-          ssl: config?.serverSettings?.ssl,
-          dbSettings: config?.dbSettings,
-        },
-        "configuration settings"
-      );
+      logger.info("configuration settings", {
+        port: config?.serverSettings?.port,
+        ssl: config?.serverSettings?.ssl,
+        dbSettings: config?.dbSettings,
+      });
 
       return server.start({
         port: config.serverSettings.port,
@@ -56,10 +51,7 @@ mediator.on("db.ready", (db) => {
     })
     .then((app) => {
       logger.info(
-        {
-          port: config?.serverSettings?.port,
-        },
-        "Application Started"
+        `Server started succesfully, running on port: ${config?.serverSettings?.port} `
       );
       app.on("close", () => {
         rep.disconnect();
@@ -68,7 +60,7 @@ mediator.on("db.ready", (db) => {
 });
 
 mediator.on("db.error", (err) => {
-  console.error(err);
+  logger.error("db.error", { reason: err });
 });
 
 config.db.connect(config.dbSettings, mediator);
