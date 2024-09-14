@@ -10,14 +10,17 @@ const os = require("os");
 logger.info("---- APPLICATION INIT ----");
 
 const handleShutdown = (err) => {
-  logger.fatal("Application Stopped", {
-    reason: err,
-    type: os?.type(),
-    cpuUsage: process?.cpuUsage(),
-    memoryUsage: process?.memoryUsage(),
-    loadAverage: os?.loadavg(),
-    uptime: process?.uptime(),
-  });
+  logger.fatal(
+    {
+      reason: err,
+      type: os?.type(),
+      cpuUsage: process?.cpuUsage(),
+      memoryUsage: process?.memoryUsage(),
+      loadAverage: os?.loadavg(),
+      uptime: process?.uptime(),
+    },
+    "Application Stopped"
+  );
 };
 
 process.on("SIGINT", handleShutdown);
@@ -37,11 +40,14 @@ mediator.on("db.ready", (db) => {
     .then((repo) => {
       rep = repo;
 
-      logger.info("configuration settings", {
-        port: config?.serverSettings?.port,
-        ssl: config?.serverSettings?.ssl,
-        dbSettings: config?.dbSettings,
-      });
+      logger.info(
+        {
+          port: config?.serverSettings?.port,
+          ssl: config?.serverSettings?.ssl,
+          dbSettings: config?.dbSettings,
+        },
+        "configuration settings"
+      );
 
       return server.start({
         port: config.serverSettings.port,
@@ -60,7 +66,7 @@ mediator.on("db.ready", (db) => {
 });
 
 mediator.on("db.error", (err) => {
-  logger.error("db.error", { reason: err });
+  logger.error({ reason: err }, "db.error");
 });
 
 config.db.connect(config.dbSettings, mediator);

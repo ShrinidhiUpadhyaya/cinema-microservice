@@ -11,8 +11,8 @@ const start = (options) => {
 
     if (!options.repo) {
       logger.fatal(
-        "The server must be started with a connected repository",
-        options
+        { options: options },
+        "The server must be started with a connected repository"
       );
       reject(
         new Error("The server must be started with a connected repository")
@@ -20,8 +20,8 @@ const start = (options) => {
     }
     if (!options.port) {
       logger.fatal(
-        "The server must be started with an available port",
-        options
+        { options: options },
+        "The server must be started with an available port"
       );
       reject(new Error("The server must be started with an available port"));
     }
@@ -30,9 +30,12 @@ const start = (options) => {
     app.use(morgan("dev"));
     app.use(helmet());
     app.use((err, req, res, next) => {
-      logger.fatal("Something went wrong!", {
-        reason: err,
-      });
+      logger.fatal(
+        {
+          reason: err,
+        },
+        "Something went wrong!"
+      );
       reject(new Error("Something went wrong!, err:" + err));
       res.status(500).send("Something went wrong!");
     });

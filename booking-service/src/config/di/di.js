@@ -25,13 +25,16 @@ function initDI(
         notificationService: asValue(services.notificationService),
       });
 
-      logger.info("configuration settings", {
-        serverSettings: serverSettings,
-        dbSettings: dbSettings,
-        database: database,
-        models: models,
-        services: services,
-      });
+      logger.info(
+        {
+          serverSettings: serverSettings,
+          dbSettings: dbSettings,
+          database: database,
+          models: models,
+          services: services,
+        },
+        "configuration settings"
+      );
 
       logger.trace("initDI: emit di.ready");
 

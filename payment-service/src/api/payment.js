@@ -9,46 +9,58 @@ module.exports = ({ repo }, app) => {
 
     const paymentOrder = req?.body?.paymentOrder;
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      input: paymentOrder,
-      traceId: traceId,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        input: paymentOrder,
+        traceId: traceId,
+      },
+      "Request"
+    );
     validate(paymentOrder, "payment")
       .then((payment) => {
-        logger.debug("validation successfull", {
-          values: payment,
-          traceId: traceId,
-        });
+        logger.debug(
+          {
+            payment: payment,
+            traceId: traceId,
+          },
+          "validation successfull"
+        );
         return repo.registerPurchase(payment);
       })
       .then((paid) => {
-        logger.debug("payment successfull", {
-          values: paid,
-          traceId: traceId,
-        });
+        logger.debug(
+          {
+            paid: paid,
+            traceId: traceId,
+          },
+          "payment successfull"
+        );
 
         res.status(status.OK).json({ paid });
       })
       .catch((err) => {
-        logger.debug("Error occured", {
-          reason: err?.message,
-          stackTrace: err?.stackTrace,
-          body: req?.body,
-          params: req?.params,
-          query: req?.query,
-          headers: req?.headers,
-          statusCode: res?.status,
-          user: {
-            ip: req?.ip,
-            userAgent: req?.get("User-Agent"),
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
+            traceId: traceId,
           },
-          performance: {
-            responseTime: res?.get("X-Response Time"),
-          },
-          traceId: traceId,
-        });
+          "Error occured"
+        );
         next(err);
       });
   });
@@ -57,43 +69,52 @@ module.exports = ({ repo }, app) => {
     const id = req?.params?.id;
     const traceId = req.headers["x-trace-id"]; // Retrieve the propagated trace ID
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      input: id,
-      traceId: traceId,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        input: id,
+        traceId: traceId,
+      },
+      "Request"
+    );
 
     repo
       .getPurchaseById(id)
       .then((payment) => {
-        logger.debug("send payment", {
-          values: payment,
-          traceId: traceId,
-        });
+        logger.debug(
+          {
+            payment: payment,
+            traceId: traceId,
+          },
+          "send payment"
+        );
 
         res.status(status.OK).json({ payment });
       })
       .catch((err) => {
-        logger.debug("Error occured", {
-          reason: err?.message,
-          stackTrace: err?.stackTrace,
-          method: req?.method,
-          api: req?.originalUrl,
-          body: req?.body,
-          params: req?.params,
-          query: req?.query,
-          headers: req?.headers,
-          statusCode: res?.status,
-          user: {
-            ip: req?.ip,
-            userAgent: req?.get("User-Agent"),
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
+            traceId: traceId,
           },
-          performance: {
-            responseTime: res?.get("X-Response Time"),
-          },
-          traceId: traceId,
-        });
+          "Error occured"
+        );
         next(err);
       });
   });

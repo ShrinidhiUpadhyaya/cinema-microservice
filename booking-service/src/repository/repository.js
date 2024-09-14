@@ -6,12 +6,6 @@ const repository = (container) => {
   const { database: db } = container.cradle;
 
   const makeBooking = (user, booking) => {
-    logger.debug("makeBooking", {
-      values: {
-        user: user,
-        booking: booking,
-      },
-    });
     return new Promise((resolve, reject) => {
       const payload = {
         city: booking.city,
@@ -29,9 +23,12 @@ const repository = (container) => {
         },
       };
 
-      logger.debug("makeBooking", {
-        payload: payload,
-      });
+      logger.debug(
+        {
+          payload: payload,
+        },
+        "makeBooking"
+      );
 
       try {
         db.collection("booking").insertOne(payload);
@@ -45,22 +42,18 @@ const repository = (container) => {
   };
 
   const generateTicket = (paid, booking) => {
-    logger.debug("generateTicket", {
-      values: {
-        paid: paid,
-        booking: booking,
-      },
-    });
-
     return new Promise((resolve, reject) => {
       const payload = Object.assign({}, booking, {
         orderId: paid.charge.id,
         description: paid.description,
       });
 
-      logger.debug("generateTicket", {
-        payload: payload,
-      });
+      logger.debug(
+        {
+          payload: payload,
+        },
+        "generateTicket"
+      );
 
       try {
         db.collection("tickets").insertOne(payload);
@@ -74,12 +67,17 @@ const repository = (container) => {
   };
 
   const getOrderById = (orderId) => {
-    logger.debug("getOrderById", {
-      orderId: orderId,
-    });
     return new Promise((resolve, reject) => {
       const ObjectID = container.resolve("ObjectID");
       const query = { _id: new ObjectID(orderId) };
+
+      logger.debug(
+        {
+          query: query,
+        },
+        "getOrderById"
+      );
+
       const response = (err, order) => {
         if (err) {
           reject(
@@ -106,7 +104,7 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
-  logger.info("repository connect", container);
+  logger.info({ container: container }, "repository connect");
 
   return new Promise((resolve, reject) => {
     if (!container.resolve("database")) {

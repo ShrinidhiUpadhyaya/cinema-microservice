@@ -6,33 +6,35 @@ module.exports = (app, options) => {
   const { repo } = options;
 
   app.get("/movies", (req, res, next) => {
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+      },
+      "Request"
+    );
 
     repo
       .getAllMovies()
       .then((movies) => {
-        logger.debug("getAllMovies successfull", {
-          values: movies,
-        });
+        logger.debug({ movies: movies }, "getAllMovies successfull");
         res.status(status.OK).json(movies);
       })
       .catch(next);
   });
 
   app.get("/movies/premieres", (req, res, next) => {
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+      },
+      "Request"
+    );
     repo
       .getMoviePremiers()
       .then((movies) => {
-        logger.debug("getMoviePremiers successfull", {
-          values: movies,
-        });
+        logger.debug({ movies: movies }, "getMoviePremiers successfull");
         res.status(status.OK).json(movies);
       })
       .catch(next);
@@ -41,17 +43,18 @@ module.exports = (app, options) => {
   app.get("/movies/:id", (req, res, next) => {
     const id = req?.params?.id;
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      input: id,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        input: id,
+      },
+      "Request"
+    );
     repo
       .getMovieById(id)
       .then((movie) => {
-        logger.debug("getMovieById successfull", {
-          values: movie,
-        });
+        logger.debug({ movie: movie }, "getMovieById successfull");
         res.status(status.OK).json(movie);
       })
       .catch(next);

@@ -10,6 +10,13 @@ const repository = (db) => {
         const movies = [];
         const cursor = collection.find();
 
+        logger.debug(
+          {
+            cursor: cursor,
+          },
+          "getAllMovies"
+        );
+
         await cursor.forEach((movie) => {
           movies.push(movie);
         });
@@ -39,7 +46,16 @@ const repository = (db) => {
             $lte: currentDay.getDate(),
           },
         };
+
+        logger.debug(
+          {
+            query: query,
+          },
+          "getMoviePremiers"
+        );
+
         const cursor = collection.find(query);
+
         await cursor.forEach((movie) => {
           movies.push(movie);
         });
@@ -51,7 +67,6 @@ const repository = (db) => {
   };
 
   const getMovieById = (id) => {
-    logger.debug("Entering getMovieById", id);
     return new Promise(async (resolve, reject) => {
       try {
         const movie = collection.findOne({ id: id });
@@ -81,7 +96,7 @@ const repository = (db) => {
 };
 
 const connect = (connection) => {
-  logger.info("repository connect", connection);
+  logger.info({ connection: connection }, "repository connect");
 
   return new Promise((resolve, reject) => {
     if (!connection) {

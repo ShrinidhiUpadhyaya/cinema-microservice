@@ -12,11 +12,7 @@ data:
     }
 
     filter {
-        if [application] == "movies-service" {
-        drop { }
-      }
-
-        if [application] == "catalog-service" {
+      if [level] == 10 {
         drop { }
       }
     }

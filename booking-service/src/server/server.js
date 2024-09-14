@@ -29,9 +29,12 @@ const start = (container) => {
     app.use(cors());
     app.use(helmet());
     app.use((err, req, res, next) => {
-      logger.fatal("Something went wrong!", {
-        reason: err,
-      });
+      logger.fatal(
+        {
+          reason: err,
+        },
+        "Something went wrong!"
+      );
       reject(new Error("Something went wrong!, err:" + err));
       res.status(500).send("Something went wrong!");
       next();

@@ -18,6 +18,8 @@ const repository = (container) => {
           { user: payment.userName, amount: payment.amount, charge }
         );
 
+        logger.debug({ paid: paid }, "makePurchase");
+
         resolve(paid);
       } catch (err) {
         reject(
@@ -35,6 +37,9 @@ const repository = (container) => {
         .then((paid) => {
           try {
             db.collection("payments").insertOne(paid);
+
+            logger.debug({ paid: paid }, "registerPurchase");
+
             resolve(paid);
           } catch {
             reject(
@@ -56,6 +61,9 @@ const repository = (container) => {
             new Error("An error occuered retrieving a order, err: " + err)
           );
         }
+
+        logger.debug({ payment: payment }, "getPurchaseById");
+
         resolve(payment);
       };
       db.collection("payments").findOne(
@@ -80,7 +88,7 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
-  logger.info("repository connect", container);
+  logger.info({ container: container }, "repository connect");
 
   return new Promise((resolve, reject) => {
     if (!container.resolve("database")) {

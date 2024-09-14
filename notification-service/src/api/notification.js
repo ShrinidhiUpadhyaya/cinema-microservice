@@ -6,11 +6,14 @@ module.exports = ({ repo }, app) => {
   app.post("/notification/sendEmail", (req, res, next) => {
     const traceId = req.headers["x-trace-id"];
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      traceId: traceId,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        traceId: traceId,
+      },
+      "Request"
+    );
 
     // ****Temporary
     const { validate } = req.container.cradle;
@@ -35,43 +38,50 @@ module.exports = ({ repo }, app) => {
 
     const payload = req?.body?.payload;
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      input: payload,
-      traceId: traceId,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        input: payload,
+        traceId: traceId,
+      },
+      "Request"
+    );
 
     validate(payload, "notification")
       .then((payload) => {
-        logger.debug("validation successfull", {
-          values: payload,
-        });
+        logger.debug({ payload: payload }, "validation successfull");
         return repo.sendSMS(payload);
       })
       .then((ok) => {
-        logger.debug("sms sent successfully", {
-          values: { ok },
-        });
+        logger.debug(
+          {
+            values: { ok },
+          },
+          "sms sent successfully"
+        );
         res.status(status.OK).json({ msg: "ok" });
       })
       .catch((err) => {
-        logger.debug("Error occured", {
-          reason: err?.message,
-          stackTrace: err?.stackTrace,
-          body: req?.body,
-          params: req?.params,
-          query: req?.query,
-          headers: req?.headers,
-          statusCode: res?.status,
-          user: {
-            ip: req?.ip,
-            userAgent: req?.get("User-Agent"),
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res?.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
         next(err);
       });
   });

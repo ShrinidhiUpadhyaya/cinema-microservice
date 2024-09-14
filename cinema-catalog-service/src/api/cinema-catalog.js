@@ -8,39 +8,43 @@ module.exports = (app, options) => {
   app.get("/cinemas", (req, res, next) => {
     const cityId = req?.query?.cityId;
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      input: cityId,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        input: cityId,
+      },
+      "Request"
+    );
 
     repo
       .getCinemasByCity(cityId)
       .then((cinemas) => {
-        logger.debug("getCinemasByCity successfull", {
-          values: cinemas,
-        });
+        logger.debug({ cinemas: cinemas }, "getCinemasByCity successfull");
         res.status(status.OK).json(cinemas);
       })
       .catch((err) => {
-        logger.debug("Error occured", {
-          reason: err?.message,
-          stackTrace: err?.stackTrace,
-          method: req?.method,
-          api: req?.originalUrl,
-          body: req?.body,
-          params: req?.params,
-          query: req?.query,
-          headers: req?.headers,
-          statusCode: res?.status,
-          user: {
-            ip: req?.ip,
-            userAgent: req?.get("User-Agent"),
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res?.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
 
         next(err);
       });
@@ -49,39 +53,43 @@ module.exports = (app, options) => {
   app.get("/cinemas/:cinemaId", (req, res, next) => {
     const cinemaId = req?.params?.cinemaId;
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      input: cinemaId,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        input: cinemaId,
+      },
+      "Request"
+    );
 
     repo
       .getCinemaById(cinemaId)
       .then((cinema) => {
-        logger.debug("getCinemaById successfull", {
-          values: cinema,
-        });
+        logger.debug({ cinema: cinema }, "getCinemaById successfull");
         res.status(status.OK).json(cinema);
       })
       .catch((err) => {
-        logger.debug("Error occured", {
-          reason: err?.message,
-          stackTrace: err?.stackTrace,
-          method: req?.method,
-          api: req?.originalUrl,
-          body: req?.body,
-          params: req?.params,
-          query: req?.query,
-          headers: req?.headers,
-          statusCode: res?.status,
-          user: {
-            ip: req?.ip,
-            userAgent: req?.get("User-Agent"),
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res?.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
         next(err);
       });
   });
@@ -92,39 +100,46 @@ module.exports = (app, options) => {
       movieId: req?.params.movieId,
     };
 
-    logger.info("Request", {
-      method: req?.method,
-      api: req?.originalUrl,
-      input: params,
-    });
+    logger.info(
+      {
+        method: req?.method,
+        api: req?.originalUrl,
+        input: params,
+      },
+      "Request"
+    );
 
     repo
       .getCinemaScheduleByMovie(params)
       .then((schedules) => {
-        logger.debug("getCinemaScheduleByMovie successfull", {
-          values: schedules,
-        });
+        logger.debug(
+          { schedules: schedules },
+          "getCinemaScheduleByMovie successfull"
+        );
         res.status(status.OK).json(schedules);
       })
       .catch((err) => {
-        logger.debug("Error occured", {
-          reason: err?.message,
-          stackTrace: err?.stackTrace,
-          method: req?.method,
-          api: req?.originalUrl,
-          body: req?.body,
-          params: req?.params,
-          query: req?.query,
-          headers: req?.headers,
-          statusCode: res?.status,
-          user: {
-            ip: req?.ip,
-            userAgent: req?.get("User-Agent"),
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
           },
-          performance: {
-            responseTime: res?.get("X-Response Time"),
-          },
-        });
+          "Error occured"
+        );
 
         next(err);
       });

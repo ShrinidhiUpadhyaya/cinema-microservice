@@ -7,7 +7,11 @@ function initDI(
   mediator
 ) {
   mediator.once("init", () => {
+    logger.trace("initDI: init");
+
     mediator.on("db.ready", (db) => {
+      logger.trace("initDI: db.ready");
+
       const container = createContainer();
 
       container.register({
@@ -20,20 +24,27 @@ function initDI(
 
       mediator.emit("di.ready", container);
 
-      logger.info("configuration settings", {
-        serverSettings: serverSettings,
-        dbSettings: dbSettings,
-        database: database,
-        models: models,
-        stripeSettings: stripeSettings,
-      });
+      logger.info(
+        {
+          serverSettings: serverSettings,
+          dbSettings: dbSettings,
+          database: database,
+          models: models,
+          stripeSettings: stripeSettings,
+        },
+        "configuration settings"
+      );
     });
 
     mediator.on("db.error", (err) => {
+      logger.trace("initDI: emit db.error");
+
       mediator.emit("di.error", err);
     });
 
     database.connect(dbSettings, mediator);
+
+    logger.trace("initDI: emit boot.ready");
 
     mediator.emit("boot.ready");
   });

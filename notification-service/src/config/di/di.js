@@ -17,11 +17,14 @@ function initDI({ serverSettings, models, smtpSettings }, mediator) {
       smtpTransport: asValue(smtpTransport),
     });
 
-    logger.info("configuration settings", {
-      serverSettings: serverSettings,
-      models: models,
-      smtpSettings: smtpSettings,
-    });
+    logger.info(
+      {
+        serverSettings: serverSettings,
+        models: models,
+        smtpSettings: smtpSettings,
+      },
+      "configuration settings"
+    );
 
     logger.trace("initDI: emit di.ready");
 

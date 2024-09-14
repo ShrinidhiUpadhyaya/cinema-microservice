@@ -13,14 +13,18 @@ now.setDate(now.getDate() + 1);
 logger.info("---- APPLICATION INIT ----");
 
 const handleShutdown = (err) => {
-  logger.fatal("Application Stopped", {
-    reason: err,
-    type: os?.type(),
-    cpuUsage: process?.cpuUsage(),
-    memoryUsage: process?.memoryUsage(),
-    loadAverage: os?.loadavg(),
-    uptime: process?.uptime(),
-  });
+  logger.fatal(
+    {
+      reason: err,
+      type: os?.type(),
+      cpuUsage: process?.cpuUsage(),
+      memoryUsage: process?.memoryUsage(),
+      loadAverage: os?.loadavg(),
+      uptime: process?.uptime(),
+    },
+
+    "Application Stopped"
+  );
 };
 
 process.on("SIGINT", handleShutdown);
