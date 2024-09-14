@@ -20,19 +20,19 @@ function initDI(
 
       mediator.emit("di.ready", container);
 
-      logger.info(
-        {
-          serverSettings: serverSettings,
-          dbSettings: dbSettings,
-          database: database,
-          models: models,
-          stripeSettings: stripeSettings,
-        },
-        "configuration settings"
-      );
+      logger.info("configuration settings", {
+        serverSettings: serverSettings,
+        dbSettings: dbSettings,
+        database: database,
+        models: models,
+        stripeSettings: stripeSettings,
+      });
     });
 
     mediator.on("db.error", (err) => {
+      logger.error("di.error", {
+        reason: err,
+      });
       mediator.emit("di.error", err);
     });
 

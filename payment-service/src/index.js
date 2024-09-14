@@ -10,17 +10,14 @@ const os = require("os");
 logger.info("---- APPLICATION INIT ----");
 
 const handleShutdown = (err) => {
-  logger.fatal(
-    {
-      reason: err,
-      type: os?.type(),
-      cpuUsage: process?.cpuUsage(),
-      memoryUsage: process?.memoryUsage(),
-      loadAverage: os?.loadavg(),
-      uptime: process?.uptime(),
-    },
-    "Application Stopped"
-  );
+  logger.fatal("Application Stopped", {
+    reason: err,
+    type: os?.type(),
+    cpuUsage: process?.cpuUsage(),
+    memoryUsage: process?.memoryUsage(),
+    loadAverage: os?.loadavg(),
+    uptime: process?.uptime(),
+  });
 };
 
 process.on("SIGINT", handleShutdown);
@@ -42,10 +39,7 @@ mediator.on("di.ready", (container) => {
     })
     .then((app) => {
       logger.info(
-        {
-          port: port,
-        },
-        "Application Started"
+        `Server started succesfully, running on port: ${container.cradle.serverSettings.port}`
       );
       app.on("close", () => {
         container.resolve("repo").disconnect();
