@@ -11,6 +11,9 @@ const repository = (connection) => {
       const cinemas = [];
       const query = { city_id: cityId };
       const cursor = collection.find(query);
+
+      logger.debug("getCinemasByCity", cursor);
+
       try {
         await cursor.forEach((movie) => {
           cinemas.push(movie);
@@ -27,6 +30,8 @@ const repository = (connection) => {
     return new Promise(async (resolve, reject) => {
       const query = { _id: new ObjectID(cinemaId) };
       const cinema = await collection.findOne(query);
+
+      logger.debug("getCinemaById", cinema);
 
       try {
         resolve(cinema);
@@ -78,6 +83,15 @@ const repository = (connection) => {
           },
         },
       ];
+
+      logger.debug("getCinemaScheduleByMovie", {
+        values: {
+          match: match,
+          group: group,
+          unwind: unwind,
+          group: group,
+        },
+      });
 
       try {
         const result = await collection

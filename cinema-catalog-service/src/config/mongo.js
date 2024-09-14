@@ -7,17 +7,23 @@ const getMongoURL = (options) => {
     "mongodb://"
   );
 
+  logger.trace("getMongoURL", url);
+
   return `${url.substr(0, url.length - 1)}/${options.db}`;
 };
 
 const getMongoAuthOptions = (options) => {
-  return {
+  const auth = {
     auth: {
       username: options.user,
       password: options.pass,
     },
     authSource: "admin",
   };
+
+  logger.trace("getMongoAuthOptions", auth);
+
+  return auth;
 };
 
 const connect = (options, mediator) => {
