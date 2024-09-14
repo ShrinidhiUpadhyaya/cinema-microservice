@@ -7,17 +7,19 @@ const logger = require("../config/logger");
 const start = (options) => {
   return new Promise((resolve, reject) => {
     if (!options.repo) {
-      logger.fatal("The server must be started with a connected repository", {
-        values: options,
-      });
+      logger.fatal(
+        "The server must be started with a connected repository",
+        options
+      );
       reject(
         new Error("The server must be started with a connected repository")
       );
     }
     if (!options.port) {
-      logger.fatal("The server must be started with an available port", {
-        values: options,
-      });
+      logger.fatal(
+        "The server must be started with an available port",
+        options
+      );
       reject(new Error("The server must be started with an available port"));
     }
 

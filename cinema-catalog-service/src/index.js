@@ -60,7 +60,7 @@ mediator.on("db.ready", (db) => {
 });
 
 mediator.on("db.error", (err) => {
-  logger.debug("db.error", { reason: err });
+  logger.error("db.error", { reason: err });
 });
 
 config.db.connect(config.dbSettings, mediator);
