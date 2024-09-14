@@ -4,12 +4,13 @@ const logger = require("../config/logger");
 
 module.exports = ({ repo }, app) => {
   app.post("/notification/sendEmail", (req, res, next) => {
-    const childLogger = logger.child({
+    const traceId = req.headers["x-trace-id"];
+
+    logger.info("Request", {
       method: req?.method,
       api: req?.originalUrl,
+      traceId: traceId,
     });
-
-    childLogger.info("Request");
 
     // ****Temporary
     const { validate } = req.container.cradle;
@@ -30,56 +31,47 @@ module.exports = ({ repo }, app) => {
 
   app.post("/notification/sendSMS", (req, res, next) => {
     const { validate } = req.container.cradle;
+    const traceId = req.headers["x-trace-id"]; // Retrieve the propagated trace ID
 
     const payload = req?.body?.payload;
 
-    const childLogger = logger.child({
+    logger.info("Request", {
       method: req?.method,
       api: req?.originalUrl,
       input: payload,
+      traceId: traceId,
     });
-
-    childLogger.info("Request");
 
     validate(payload, "notification")
       .then((payload) => {
-        childLogger.trace(
-          {
-            values: payload,
-          },
-          "validation successfull"
-        );
+        logger.debug("validation successfull", {
+          values: payload,
+        });
         return repo.sendSMS(payload);
       })
       .then((ok) => {
-        childLogger.trace(
-          {
-            values: { ok },
-          },
-          "sms sent successfully"
-        );
+        logger.debug("sms sent successfully", {
+          values: { ok },
+        });
         res.status(status.OK).json({ msg: "ok" });
       })
       .catch((err) => {
-        childLogger.debug(
-          {
-            reason: err?.message,
-            stackTrace: err?.stackTrace,
-            body: req?.body,
-            params: req?.params,
-            query: req?.query,
-            headers: req?.headers,
-            statusCode: res?.status,
-            user: {
-              ip: req?.ip,
-              userAgent: req?.get("User-Agent"),
-            },
-            performance: {
-              responseTime: res?.get("X-Response Time"),
-            },
+        logger.debug("Error occured", {
+          reason: err?.message,
+          stackTrace: err?.stackTrace,
+          body: req?.body,
+          params: req?.params,
+          query: req?.query,
+          headers: req?.headers,
+          statusCode: res?.status,
+          user: {
+            ip: req?.ip,
+            userAgent: req?.get("User-Agent"),
           },
-          "Error occured"
-        );
+          performance: {
+            responseTime: res?.get("X-Response Time"),
+          },
+        });
         next(err);
       });
   });

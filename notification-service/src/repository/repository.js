@@ -57,7 +57,7 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
-  logger.info(container, "repository connect");
+  logger.info("repository connect", container);
 
   return new Promise((resolve, reject) => {
     if (!container) {

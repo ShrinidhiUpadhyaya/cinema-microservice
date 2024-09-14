@@ -15,14 +15,11 @@ function initDI({ serverSettings, models, smtpSettings }, mediator) {
       smtpTransport: asValue(smtpTransport),
     });
 
-    logger.info(
-      {
-        serverSettings: serverSettings,
-        models: models,
-        smtpSettings: smtpSettings,
-      },
-      "configuration settings"
-    );
+    logger.info("configuration settings", {
+      serverSettings: serverSettings,
+      models: models,
+      smtpSettings: smtpSettings,
+    });
 
     mediator.emit("di.ready", container);
   });
