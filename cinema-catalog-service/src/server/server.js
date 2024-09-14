@@ -7,19 +7,17 @@ const logger = require("../config/logger");
 const start = (options) => {
   return new Promise((resolve, reject) => {
     if (!options.repo) {
-      logger.fatal(
-        { values: options },
-        "The server must be started with a connected repository"
-      );
+      logger.fatal("The server must be started with a connected repository", {
+        values: options,
+      });
       reject(
         new Error("The server must be started with a connected repository")
       );
     }
     if (!options.port) {
-      logger.fatal(
-        { values: options },
-        "The server must be started with an available port"
-      );
+      logger.fatal("The server must be started with an available port", {
+        values: options,
+      });
       reject(new Error("The server must be started with an available port"));
     }
 
@@ -27,12 +25,9 @@ const start = (options) => {
     app.use(morgan("dev"));
     app.use(helmet());
     app.use((err, req, res, next) => {
-      logger.fatal(
-        {
-          reason: err,
-        },
-        "Something went wrong!"
-      );
+      logger.fatal("Something went wrong!", {
+        reason: err,
+      });
       reject(new Error("Something went wrong!, err:" + err));
       res.status(500).send("Something went wrong!");
     });

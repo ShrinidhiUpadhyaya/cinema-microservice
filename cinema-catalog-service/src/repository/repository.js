@@ -92,7 +92,7 @@ const repository = (connection) => {
   };
 
   const disconnect = () => {
-    logger.info("db.disconnect");
+    logger.info("repository disconnect");
     db.close();
   };
 
@@ -105,7 +105,7 @@ const repository = (connection) => {
 };
 
 const connect = (connection) => {
-  logger.info(connection, "repository connect");
+  logger.info("repository connect", connection);
 
   return new Promise((resolve, reject) => {
     if (!connection) {
