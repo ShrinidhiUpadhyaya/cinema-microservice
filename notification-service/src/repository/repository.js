@@ -3,6 +3,8 @@ const logger = require("../config/logger");
 
 const repository = (container) => {
   const sendEmail = (payload) => {
+    logger.debug("sendEmail", payload);
+
     return new Promise((resolve, reject) => {
       const { smtpSettings, smtpTransport, nodemailer } = container.cradle;
 
@@ -37,10 +39,12 @@ const repository = (container) => {
       };
 
       transporter.sendMail(mailOptions, (err, info) => {
+        logger.trace("Enetering sendMail", mailOptions);
         if (err) {
           reject(new Error("An error occured sending an email, err:" + err));
         }
         transporter.close();
+        logger.trace("Exiting sendMail", info);
         resolve(info);
       });
     });

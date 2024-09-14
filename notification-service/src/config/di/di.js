@@ -5,6 +5,8 @@ const logger = require("../logger");
 
 function initDI({ serverSettings, models, smtpSettings }, mediator) {
   mediator.once("init", () => {
+    logger.trace("initDI: init");
+
     const container = createContainer();
 
     container.register({
@@ -20,6 +22,8 @@ function initDI({ serverSettings, models, smtpSettings }, mediator) {
       models: models,
       smtpSettings: smtpSettings,
     });
+
+    logger.trace("initDI: emit di.ready");
 
     mediator.emit("di.ready", container);
   });
