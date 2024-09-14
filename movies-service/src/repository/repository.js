@@ -51,6 +51,7 @@ const repository = (db) => {
   };
 
   const getMovieById = (id) => {
+    logger.debug("Entering getMovieById", id);
     return new Promise(async (resolve, reject) => {
       try {
         const movie = collection.findOne({ id: id });
