@@ -2,11 +2,12 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const api = require("../api/cinema-catalog");
-const { getLogger } = require("../config/logger");
-const logger = getLogger();
+const logger = require("../config/logger");
 
 const start = (options) => {
   return new Promise((resolve, reject) => {
+    logger.log("Starting server initialization");
+
     if (!options.repo) {
       logger.error("The server must be started with a connected repository");
 
@@ -34,6 +35,8 @@ const start = (options) => {
     api(app, options);
 
     const server = app.listen(options.port, () => resolve(server));
+
+    logger.log("Exiting server start");
   });
 };
 

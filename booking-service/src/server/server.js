@@ -5,33 +5,24 @@ const bodyparser = require("body-parser");
 const cors = require("cors");
 const _api = require("../api/booking");
 const os = require("os");
+const logger = require("../config/logger");
 
 const start = (container) => {
   return new Promise((resolve, reject) => {
+    logger.log("Starting server initialization");
+
     const { port } = container.resolve("serverSettings");
     const repo = container.resolve("repo");
 
     if (!repo) {
-      console.error({
-        application: "booking-service",
-        system: os.hostname(),
-        message: "The server must be started with a connected repository",
-        timestamp: Date.now(),
-        level: "error",
-      });
+      logger.error("The server must be started with a connected repository");
 
       reject(
         new Error("The server must be started with a connected repository")
       );
     }
     if (!port) {
-      console.error({
-        application: "booking-service",
-        system: os.hostname(),
-        message: "The server must be started with an available port",
-        timestamp: Date.now(),
-        level: "error",
-      });
+      logger.error("The server must be started with an available port");
 
       reject(new Error("The server must be started with an available port"));
     }
@@ -42,12 +33,7 @@ const start = (container) => {
     app.use(cors());
     app.use(helmet());
     app.use((err, req, res, next) => {
-      console.error({
-        application: "booking-service",
-        system: os.hostname(),
-        message: "Something went wrong!",
-        timestamp: Date.now(),
-        level: "error",
+      logger.error("Something went wrong!", {
         reason: err,
       });
       reject(new Error("Something went wrong!, err:" + err));
@@ -63,6 +49,7 @@ const start = (container) => {
     api(app);
 
     const server = app.listen(port, () => resolve(server));
+    logger.log("Exiting server start");
   });
 };
 

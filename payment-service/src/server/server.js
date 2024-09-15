@@ -4,11 +4,12 @@ const helmet = require("helmet");
 const bodyparser = require("body-parser");
 const cors = require("cors");
 const _api = require("../api/payment");
-const { getLogger } = require("../config/logger");
-const logger = getLogger();
+const logger = require("../config/logger");
 
 const start = (container) => {
   return new Promise((resolve, reject) => {
+    logger.log("Starting server initialization");
+
     const { port } = container.resolve("serverSettings");
     const repo = container.resolve("repo");
 
@@ -47,6 +48,8 @@ const start = (container) => {
     api(app);
 
     const server = app.listen(port, () => resolve(server));
+
+    logger.log("Exiting server start");
   });
 };
 

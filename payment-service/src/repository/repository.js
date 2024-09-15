@@ -1,6 +1,5 @@
 "use strict";
-const { getLogger } = require("../config/logger");
-const logger = getLogger();
+const logger = require("../config/logger");
 
 const repository = (container) => {
   const { database: db } = container.cradle;
@@ -13,6 +12,8 @@ const repository = (container) => {
           amount: Math.ceil(payment.amount * 100),
           currency: payment.currency,
         });
+
+        logger.debug("makePurchase", { paid: paid });
 
         const paid = Object.assign(
           {},
@@ -36,6 +37,9 @@ const repository = (container) => {
         .then((paid) => {
           try {
             db.collection("payments").insertOne(paid);
+
+            logger.debug("getPurchaseById", { payment: payment });
+
             resolve(paid);
           } catch {
             reject(
@@ -57,6 +61,9 @@ const repository = (container) => {
             new Error("An error occuered retrieving a order, err: " + err)
           );
         }
+
+        logger.debug("getPurchaseById", { payment: payment });
+
         resolve(payment);
       };
       db.collection("payments").findOne(
@@ -68,7 +75,7 @@ const repository = (container) => {
   };
 
   const disconnect = () => {
-    logger.info("db.disconnect");
+    logger.info("repository disconnect");
 
     db.close();
   };

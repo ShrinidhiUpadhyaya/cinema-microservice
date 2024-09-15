@@ -1,6 +1,5 @@
 const { MongoClient } = require("mongodb");
-const { getLogger } = require("../logger");
-const logger = getLogger();
+const logger = require("../logger");
 
 const getMongoURL = (options) => {
   const url = options.servers.reduce(
@@ -8,25 +7,37 @@ const getMongoURL = (options) => {
     "mongodb://"
   );
 
+  logger.log("getMongoURL", { url: url });
+
   return `${url.substr(0, url.length - 1)}/${options.db}`;
 };
 
 const getMongoAuthOptions = (options) => {
-  return {
+  const auth = {
     auth: {
       username: options.user,
       password: options.pass,
     },
     authSource: "admin",
   };
-};
 
+  logger.log("getMongoAuthOptions", { auth: auth });
+
+  return auth;
+};
 const connect = (options, mediator) => {
   mediator.once("boot.ready", async () => {
     const client = await new MongoClient(
       getMongoURL(options),
       getMongoAuthOptions(options)
     );
+
+    logger.info("db.connect", {
+      options: options,
+      mongoURL: getMongoURL(options),
+      mongoAuthOptions: getMongoAuthOptions(options),
+    });
+
     client
       .connect()
       .then(() => mediator.emit("db.ready", client.db(process.env.DB)))

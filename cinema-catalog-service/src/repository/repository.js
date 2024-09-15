@@ -1,6 +1,5 @@
 "use strict";
-const { getLogger } = require("../config/logger");
-const logger = getLogger();
+const logger = require("../config/logger");
 
 const repository = (connection) => {
   const { db, ObjectID } = connection;
@@ -12,6 +11,9 @@ const repository = (connection) => {
       const cinemas = [];
       const query = { city_id: cityId };
       const cursor = collection.find(query);
+
+      logger.debug("getCinemasByCity", { cursor: cursor });
+
       try {
         await cursor.forEach((movie) => {
           cinemas.push(movie);
@@ -26,6 +28,8 @@ const repository = (connection) => {
 
   const getCinemaById = (cinemaId) => {
     return new Promise(async (resolve, reject) => {
+      logger.debug("getCinemaById", { cinema: cinema });
+
       const query = { _id: new ObjectID(cinemaId) };
       const cinema = await collection.findOne(query);
 
@@ -80,6 +84,13 @@ const repository = (connection) => {
         },
       ];
 
+      logger.debug("getCinemaScheduleByMovie", {
+        match: match,
+        group: group,
+        unwind: unwind,
+        group: group,
+      });
+
       try {
         const result = await collection
           .aggregate([match, project, ...unwind, ...group])
@@ -93,7 +104,7 @@ const repository = (connection) => {
   };
 
   const disconnect = () => {
-    logger.info("db.disconnect");
+    logger.info("repository disconnect");
     db.close();
   };
 

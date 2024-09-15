@@ -1,6 +1,6 @@
 "use strict";
 
-const os = require("os");
+const logger = require("../config/logger");
 
 const repository = (container) => {
   const { database: db } = container.cradle;
@@ -23,6 +23,13 @@ const repository = (container) => {
         },
       };
 
+      logger.debug(
+        {
+          payload: payload,
+        },
+        "makeBooking"
+      );
+
       try {
         db.collection("booking").insertOne(payload);
         resolve(payload);
@@ -41,6 +48,13 @@ const repository = (container) => {
         description: paid.description,
       });
 
+      logger.debug(
+        {
+          payload: payload,
+        },
+        "generateTicket"
+      );
+
       try {
         db.collection("tickets").insertOne(payload);
         resolve(payload);
@@ -56,6 +70,13 @@ const repository = (container) => {
     return new Promise((resolve, reject) => {
       const ObjectID = container.resolve("ObjectID");
       const query = { _id: new ObjectID(orderId) };
+      logger.debug(
+        {
+          query: query,
+        },
+        "getOrderById"
+      );
+
       const response = (err, order) => {
         if (err) {
           reject(
@@ -69,13 +90,7 @@ const repository = (container) => {
   };
 
   const disconnect = () => {
-    console.info({
-      application: "booking-service",
-      system: os.hostname(),
-      message: "db.disconnect",
-      timestamp: Date.now(),
-      level: "info",
-    });
+    logger.info("repository disconnect");
     db.close();
   };
 
@@ -88,23 +103,10 @@ const repository = (container) => {
 };
 
 const connect = (container) => {
-  console.info({
-    application: "booking-service",
-    system: os.hostname(),
-    message: "repository connect",
-    timestamp: Date.now(),
-    level: "info",
-    values: container,
-  });
+  logger.info("repository connect");
   return new Promise((resolve, reject) => {
     if (!container.resolve("database")) {
-      console.error({
-        application: "booking-service",
-        system: os.hostname(),
-        message: "connection db not supplied!",
-        timestamp: Date.now(),
-        level: "error",
-      });
+      logger.error("connection db not supplied!");
       reject(new Error("connection db not supplied!"));
     }
     resolve(repository(container));

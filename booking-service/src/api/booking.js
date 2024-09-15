@@ -1,24 +1,29 @@
 "use strict";
 const status = require("http-status");
 const os = require("os");
+const logger = require("../config/logger");
+const { v4: uuidv4 } = require("uuid");
 
 module.exports = ({ repo }, app) => {
   app.post("/booking", (req, res, next) => {
     const validate = req.container.cradle.validate;
     const paymentService = req.container.resolve("paymentService");
     const notificationService = req.container.resolve("notificationService");
+    const traceId = req.headers["x-trace-id"] || uuidv4();
+    req.headers["x-trace-id"] = traceId;
+
+    logger.info("Request", {
+      method: req?.method,
+      api: req?.originalUrl,
+      traceId: traceId,
+    });
 
     Promise.all([
       validate(req.body.user, "user"),
       validate(req.body.booking, "booking"),
     ])
       .then(([user, booking]) => {
-        console.log({
-          application: "booking-service",
-          system: os.hostname(),
-          message: "validation successfull",
-          timestamp: Date.now(),
-          level: "log",
+        logger.debug("validation successful", {
           values: { user, booking },
         });
 
@@ -43,13 +48,10 @@ module.exports = ({ repo }, app) => {
         ]);
       })
       .then(([paid, user, booking]) => {
-        console.log({
-          application: "booking-service",
-          system: os.hostname(),
-          message: "make booking",
-          timestamp: Date.now(),
-          level: "log",
-          values: { paid, user, booking },
+        logger.debug("make booking", {
+          paid: paid,
+          user: user,
+          booking: booking,
         });
 
         return Promise.all([
@@ -59,13 +61,10 @@ module.exports = ({ repo }, app) => {
         ]);
       })
       .then(([booking, paid, user]) => {
-        console.log({
-          application: "booking-service",
-          system: os.hostname(),
-          message: "generate ticket",
-          timestamp: Date.now(),
-          level: "log",
-          values: { booking, paid, user },
+        logger.debug("generate ticket", {
+          booking: booking,
+          paid: paid,
+          user: user,
         });
         return Promise.all([
           repo.generateTicket(paid, booking),
@@ -73,13 +72,9 @@ module.exports = ({ repo }, app) => {
         ]);
       })
       .then(([ticket, user]) => {
-        console.log({
-          application: "booking-service",
-          system: os.hostname(),
-          message: "send notification",
-          timestamp: Date.now(),
-          level: "log",
-          values: { ticket, user },
+        logger.debug("send notification", {
+          ticket: ticket,
+          user: user,
         });
 
         const payload = Object.assign({}, ticket, {
@@ -89,12 +84,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json(ticket);
       })
       .catch((err) => {
-        console.error({
-          application: "booking-service",
-          system: os.hostname(),
-          message: "Error occured",
-          timestamp: Date.now(),
-          level: "error",
+        logger.debug("Error occured", {
           reason: err?.message,
           stackTrace: err?.stackTrace,
           method: req?.method,
@@ -117,26 +107,23 @@ module.exports = ({ repo }, app) => {
   });
 
   app.get("/booking/verify/:orderId", (req, res, next) => {
+    logger.info("Request", {
+      method: req?.method,
+      api: "/booking/verify/:orderId",
+      input: orderId,
+      traceId: traceId,
+    });
+
     repo
       .getOrderById(req.params.orderId)
       .then((order) => {
-        console.log({
-          application: "booking-service",
-          system: os.hostname(),
-          message: "getOrderById successfull",
-          timestamp: Date.now(),
-          level: "log",
-          values: order,
+        logger.debug("getOrderById successfull", {
+          order: order,
         });
         res.status(status.OK).json(order);
       })
       .catch((err) => {
-        console.error({
-          application: "booking-service",
-          system: os.hostname(),
-          message: "Error occured",
-          timestamp: Date.now(),
-          level: "error",
+        logger.debug("Error occured", {
           reason: err?.message,
           stackTrace: err?.stackTrace,
           method: req?.method,

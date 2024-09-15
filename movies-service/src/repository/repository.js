@@ -1,6 +1,5 @@
 "use strict";
-const { getLogger } = require("../config/logger");
-const logger = getLogger();
+const logger = require("../config/logger");
 
 const repository = (db) => {
   const collection = db.collection("movies");
@@ -10,6 +9,10 @@ const repository = (db) => {
       try {
         const movies = [];
         const cursor = collection.find();
+
+        logger.debug("getAllMovies", {
+          cursor: cursor,
+        });
 
         await cursor.forEach((movie) => {
           movies.push(movie);
@@ -40,6 +43,11 @@ const repository = (db) => {
             $lte: currentDay.getDate(),
           },
         };
+
+        logger.debug("getMoviePremiers", {
+          query: query,
+        });
+
         const cursor = collection.find(query);
         await cursor.forEach((movie) => {
           movies.push(movie);
@@ -67,7 +75,7 @@ const repository = (db) => {
   };
 
   const disconnect = () => {
-    logger.info("db.disconnect");
+    logger.info("repository disconnect");
     db.close();
   };
 

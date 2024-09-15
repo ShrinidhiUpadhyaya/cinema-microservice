@@ -1,21 +1,68 @@
 "use strict";
 
-const { init } = require("./config/logger");
-init({
-  applicationData: {
-    name: "catalog-service",
-    filename: "/var/log/catalog-service/app.log",
-  },
-});
-
-const { getLogger } = require("./config/logger");
-const logger = getLogger();
-
 const { EventEmitter } = require("events");
 const server = require("./server/server");
 const repository = require("./repository/repository");
 const config = require("./config/");
 const mediator = new EventEmitter();
+const os = require("os");
+const logger = require("./config/logger");
+
+logger.info("---- APPLICATION INIT ----");
+
+const serializeError = (err) => {
+  if (err instanceof Error) {
+    return {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      ...err,
+    };
+  }
+  return err;
+};
+
+const getProcessInfo = () => ({
+  type: os.type(),
+  cpuUsage: process.cpuUsage(),
+  memoryUsage: process.memoryUsage(),
+  loadAverage: os.loadavg(),
+  uptime: process.uptime(),
+});
+
+const signals = ["SIGINT", "SIGTERM", "SIGSEGV", "SIGILL", "SIGABRT", "SIGFPE"];
+
+const handleShutdown = (reason, isError = true) => {
+  const processInfo = getProcessInfo();
+
+  if (isError) {
+    const errorInfo = serializeError(reason);
+    logger.error("---- Application Stopped Due to Error ----", {
+      reason: errorInfo,
+      ...processInfo,
+    });
+  } else {
+    logger.info("---- Application Shutdown ----", {
+      reason: reason,
+      ...processInfo,
+    });
+  }
+  process.exit(isError ? 1 : 0);
+};
+
+process.on("uncaughtException", (error) => {
+  handleShutdown(error, true);
+});
+
+process.on("unhandledRejection", (reason) => {
+  handleShutdown(reason, true);
+});
+
+signals.forEach((signal) => {
+  process.on(signal, () => {
+    handleShutdown(`Received ${signal} signal`, false);
+  });
+});
 
 mediator.on("db.ready", (db) => {
   let rep;
@@ -24,9 +71,9 @@ mediator.on("db.ready", (db) => {
     .then((repo) => {
       rep = repo;
       logger.info("configuration settings", {
-        serverSettings: config.serverSettings,
-        dbSettings: config.dbSettings,
-        db: config.db,
+        port: config?.serverSettings?.port,
+        ssl: config?.serverSettings?.ssl,
+        ObjectID: config?.ObjectID,
       });
 
       return server.start({

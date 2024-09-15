@@ -5,45 +5,64 @@ const server = require("./server/server");
 const repository = require("./repository/repository");
 const di = require("./config");
 const mediator = new EventEmitter();
-
 const os = require("os");
+const logger = require("./config/logger");
 
-const now = new Date();
-now.setDate(now.getDate() + 1);
+logger.info("---- APPLICATION INIT ----");
 
-console.info({
-  application: "booking-service",
-  system: os.hostname(),
-  message: "---- APPLICATION INIT ----",
-  timestamp: Date.now(),
-  level: "info",
-});
-
-const handleShutdown = (err) => {
-  console.error({
-    application: "booking-service",
-    system: os.hostname(),
-    message: "---- Application Stopped ----",
-    timestamp: Date.now(),
-    level: "error",
-    reason: err,
-    type: os?.type(),
-    cpuUsage: process?.cpuUsage(),
-    memoryUsage: process?.memoryUsage(),
-    loadAverage: os?.loadavg(),
-    uptime: process?.uptime(),
-  });
+const serializeError = (err) => {
+  if (err instanceof Error) {
+    return {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      ...err,
+    };
+  }
+  return err;
 };
 
-process.on("SIGINT", handleShutdown);
-process.on("SIGTERM", handleShutdown);
-process.on("SIGSEGV", handleShutdown);
-process.on("SIGILL", handleShutdown);
-process.on("SIGABRT", handleShutdown);
-process.on("SIGFPE", handleShutdown);
+const getProcessInfo = () => ({
+  type: os.type(),
+  cpuUsage: process.cpuUsage(),
+  memoryUsage: process.memoryUsage(),
+  loadAverage: os.loadavg(),
+  uptime: process.uptime(),
+});
 
-process.on("uncaughtRejection", handleShutdown);
-process.on("uncaughtException", handleShutdown);
+const signals = ["SIGINT", "SIGTERM", "SIGSEGV", "SIGILL", "SIGABRT", "SIGFPE"];
+
+const handleShutdown = (reason, isError = true) => {
+  const processInfo = getProcessInfo();
+
+  if (isError) {
+    const errorInfo = serializeError(reason);
+    logger.error("---- Application Stopped Due to Error ----", {
+      reason: errorInfo,
+      ...processInfo,
+    });
+  } else {
+    logger.info("---- Application Shutdown ----", {
+      reason: reason,
+      ...processInfo,
+    });
+  }
+  process.exit(isError ? 1 : 0);
+};
+
+process.on("uncaughtException", (error) => {
+  handleShutdown(error, true);
+});
+
+process.on("unhandledRejection", (reason) => {
+  handleShutdown(reason, true);
+});
+
+signals.forEach((signal) => {
+  process.on(signal, () => {
+    handleShutdown(`Received ${signal} signal`, false);
+  });
+});
 
 mediator.on("di.ready", (container) => {
   repository
@@ -53,14 +72,10 @@ mediator.on("di.ready", (container) => {
       return server.start(container);
     })
     .then((app) => {
-      console.info({
-        application: "booking-service",
-        system: os.hostname(),
-        message: "Server started succesfully, running on port:",
-        timestamp: Date.now(),
-        level: "info",
-        port: container.cradle.serverSettings.port,
-      });
+      logger.info(
+        `Server started succesfully, running on port: ${container.cradle.serverSettings.port}`
+      );
+
       app.on("close", () => {
         container.resolve("repo").disconnect();
       });

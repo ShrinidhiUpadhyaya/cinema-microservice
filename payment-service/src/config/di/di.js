@@ -1,14 +1,17 @@
 const { createContainer, asValue } = require("awilix");
 const stripe = require("stripe");
-const { getLogger } = require("../logger");
-const logger = getLogger();
+const logger = require("../logger");
 
 function initDI(
   { serverSettings, dbSettings, database, models, stripeSettings },
   mediator
 ) {
   mediator.once("init", () => {
+    logger.log("initDI: init");
+
     mediator.on("db.ready", (db) => {
+      logger.log("initDI: db.ready");
+
       const container = createContainer();
 
       container.register({
@@ -21,20 +24,23 @@ function initDI(
 
       logger.info("configuration settings", {
         serverSettings: serverSettings,
+        dbSettings: dbSettings,
         database: database,
         models: models,
-        stripe: stripeSettings,
+        stripeSettings: stripeSettings,
       });
 
       mediator.emit("di.ready", container);
     });
 
     mediator.on("db.error", (err) => {
+      logger.log("initDI: emit db.error");
+
       mediator.emit("di.error", err);
     });
 
     database.connect(dbSettings, mediator);
-
+    logger.log("initDI: emit boot.ready");
     mediator.emit("boot.ready");
   });
 }
