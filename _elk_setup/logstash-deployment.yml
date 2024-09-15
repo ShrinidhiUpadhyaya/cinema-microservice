@@ -19,12 +19,23 @@ data:
       #}
     }
 
+    filter {
+      if [level] == "silly" {
+        drop { }
+      }
+
+       if [log][file][path] =~ /\/var\/log\/mongodb\// {
+        drop { }
+      }
+    }
+
+
     output {
       elasticsearch {
         hosts => ["http://elasticsearch:9200"]
         user => "elastic"
         password => "changeme"
-        index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
+        index => "winston-cinema-microservice-logs-%{+YYYY.MM.dd}"
         codec => json
       }
       stdout { codec => rubydebug }
