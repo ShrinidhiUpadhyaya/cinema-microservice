@@ -1,6 +1,7 @@
 "use strict";
 const status = require("http-status");
-const { apiLogger, apiErrorLogger } = require("../config/logger");
+const { apiLogger, apiErrorLogger, getLogger } = require("../config/logger");
+const logger = getLogger();
 
 module.exports = (app, options) => {
   app.use(apiLogger);
