@@ -8,15 +8,21 @@ const logger = getLogger();
 
 const start = (options) => {
   return new Promise((resolve, reject) => {
+    logger.silly("Starting server initialization");
+
     if (!options.repo) {
-      logger.error("The server must be started with a connected repository");
+      logger.error("The server must be started with a connected repository", {
+        options: options,
+      });
 
       reject(
         new Error("The server must be started with a connected repository")
       );
     }
     if (!options.port) {
-      logger.error("The server must be started with an available port");
+      logger.error("The server must be started with an available port", {
+        options: options,
+      });
 
       reject(new Error("The server must be started with an available port"));
     }
@@ -35,12 +41,13 @@ const start = (options) => {
     api(app, options);
 
     // http
-    // const server = app.listen(options.port, () => resolve(server))
+    const server = app.listen(options.port, () => resolve(server));
 
     // https
-    const server = spdy
-      .createServer(options.ssl, app)
-      .listen(options.port, () => resolve(server));
+    // const server = spdy
+    //   .createServer(options.ssl, app)
+    //   .listen(options.port, () => resolve(server));
+    logger.silly("Exiting server start");
   });
 };
 

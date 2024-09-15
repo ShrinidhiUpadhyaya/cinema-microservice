@@ -15,6 +15,12 @@ module.exports = ({ repo }, app) => {
       validate(req.body.booking, "booking"),
     ])
       .then(([user, booking]) => {
+        // Return Value Logging
+        logger.debug("validation successfull", {
+          user: user,
+          booking: booking,
+        });
+
         const payment = {
           userName: user.name + " " + user.lastName,
           currency: "mxn",
@@ -36,6 +42,12 @@ module.exports = ({ repo }, app) => {
         ]);
       })
       .then(([paid, user, booking]) => {
+        // Return Value Logging
+        logger.debug("make booking", {
+          paid: paid,
+          user: user,
+          booking: booking,
+        });
         return Promise.all([
           repo.makeBooking(user, booking),
           Promise.resolve(paid),
@@ -43,12 +55,20 @@ module.exports = ({ repo }, app) => {
         ]);
       })
       .then(([booking, paid, user]) => {
+        // Return Value Logging
+        logger.debug("generate ticket", {
+          booking: booking,
+          paid: paid,
+          user: user,
+        });
         return Promise.all([
           repo.generateTicket(paid, booking),
           Promise.resolve(user),
         ]);
       })
       .then(([ticket, user]) => {
+        // Return Value Logging
+        logger.debug("send notification", { ticket: ticket, user: user });
         const payload = Object.assign({}, ticket, {
           user: { name: user.name + user.lastName, email: user.email },
         });
@@ -62,6 +82,7 @@ module.exports = ({ repo }, app) => {
     repo
       .getOrderById(req.params.orderId)
       .then((order) => {
+        logger.debug("getOrderById successfull", { order: order });
         res.status(status.OK).json(order);
       })
       .catch(next);

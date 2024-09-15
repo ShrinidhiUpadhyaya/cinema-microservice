@@ -6,6 +6,8 @@ const logger = getLogger();
 
 function initDI({ serverSettings, models, smtpSettings }, mediator) {
   mediator.once("init", () => {
+    logger.silly("initDI: init");
+
     const container = createContainer();
 
     container.register({
@@ -17,12 +19,14 @@ function initDI({ serverSettings, models, smtpSettings }, mediator) {
     });
 
     logger.info("configuration settings", {
-      validate: asValue(models.validate),
-      serverSettings: asValue(serverSettings),
-      smtpSettings: asValue(smtpSettings),
-      nodemailer: asValue(nodemailer),
-      smtpTransport: asValue(smtpTransport),
+      validate: models.validate,
+      serverSettings: serverSettings,
+      smtpSettings: smtpSettings,
+      nodemailer: nodemailer,
+      smtpTransport: smtpTransport,
     });
+
+    logger.silly("initDI: emit di.ready");
 
     mediator.emit("di.ready", container);
   });

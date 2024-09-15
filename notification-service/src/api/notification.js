@@ -6,8 +6,6 @@ module.exports = ({ repo }, app) => {
   app.use(apiLogger);
 
   app.post("/notification/sendEmail", (req, res, next) => {
-    console.log("/notification/sendEmail");
-
     // ****Temporary
     const { validate } = req.container.cradle;
     res.status(status.OK).json({ msg: "ok" });
@@ -30,9 +28,14 @@ module.exports = ({ repo }, app) => {
 
     validate(req.body.payload, "notification")
       .then((payload) => {
+        logger.debug("validation successfull", { payload: payload });
+
         return repo.sendSMS(payload);
       })
       .then((ok) => {
+        logger.debug("sms sent successfully", {
+          values: { ok },
+        });
         res.status(status.OK).json({ msg: "ok" });
       })
       .catch(next);

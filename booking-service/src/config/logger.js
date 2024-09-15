@@ -49,7 +49,7 @@ function getTransport() {
 
 function initLogger() {
   logger.logger = winston.createLogger({
-    level: applicationData.level ?? "debug",
+    level: applicationData.level ?? "silly",
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.json()
@@ -86,43 +86,14 @@ const logStart = () => {
 };
 
 const logShutdown = (signal) => {
-  return () => {
-    logger.logger.error(`Application Shutdown ${signal}`, {
-      application: applicationData?.name,
-      description: applicationData?.description,
-      metadata: applicationData?.metadata,
-      metrics: metrics,
-      reason: signal,
-      category: "Shutdown",
-    });
-  };
-};
-
-const logException = (exception) => {
-  return () => {
-    logger.logger.error(`${exception}`, {
-      application: applicationData?.name,
-      category: "Exception",
-    });
-  };
-};
-
-const logRejection = (rejection) => {
-  return () => {
-    logger.logger.error(`${rejection}`, {
-      application: applicationData?.name,
-      category: "Rejection",
-    });
-  };
-};
-
-const logWarning = (warning) => {
-  return () => {
-    logger.logger.error(`${warning.message}`, {
-      application: applicationData?.name,
-      category: "Warning",
-    });
-  };
+  logger.logger.error("Application Shutdown", {
+    application: applicationData?.name,
+    description: applicationData?.description,
+    metadata: applicationData?.metadata,
+    metrics: metrics,
+    reason: signal,
+    category: "Shutdown",
+  });
 };
 
 const handleErrorSignals = () => {
@@ -135,24 +106,32 @@ const handleErrorSignals = () => {
     "SIGFPE",
   ];
 
-  const exceptions = ["uncaughtException"];
-  const rejections = ["unhandledRejection"];
-  const warnings = ["warning"];
-
   signals.forEach((signal) => {
-    process.on(signal, logShutdown(signal));
+    process.on(signal, () => logShutdown(signal));
   });
 
-  exceptions.forEach((exception) => {
-    process.on(exception, logException(exception));
+  process.on("uncaughtException", (error) => {
+    logger.logger.error("Exception", {
+      application: applicationData?.name,
+      category: "Exception",
+      reason: error,
+    });
   });
 
-  rejections.forEach((rejection) => {
-    process.on(rejection, logRejection(rejection));
+  process.on("unhandledRejection", (reason) => {
+    logger.logger.error(`Rejection`, {
+      application: applicationData?.name,
+      category: "Rejection",
+      reason: reason,
+    });
   });
 
-  warnings.forEach((warning) => {
-    process.on(warning, logWarning(warning));
+  process.on("warning", (warning) => {
+    logger.logger.warn(`${warning.name}: ${warning.message}`, {
+      application: applicationData?.name,
+      category: "Warning",
+      stack: warning.stack,
+    });
   });
 };
 
@@ -184,7 +163,7 @@ const apiLogger = (req, res, next) => {
 };
 
 const apiErrorLogger = (err, req, res, next) => {
-  logger.logger.info(`${req.method} ${req.originalUrl}`, {
+  logger.logger.debug(`${req.method} ${req.originalUrl}`, {
     category: "Error",
     application: applicationData?.name,
     reason: err.message,

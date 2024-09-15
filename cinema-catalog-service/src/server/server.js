@@ -7,6 +7,8 @@ const logger = getLogger();
 
 const start = (options) => {
   return new Promise((resolve, reject) => {
+    logger.silly("Starting server initialization");
+
     if (!options.repo) {
       logger.error("The server must be started with a connected repository");
 
@@ -34,6 +36,8 @@ const start = (options) => {
     api(app, options);
 
     const server = app.listen(options.port, () => resolve(server));
+
+    logger.silly("Exiting server start");
   });
 };
 

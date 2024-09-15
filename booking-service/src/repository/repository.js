@@ -24,6 +24,10 @@ const repository = (container) => {
         },
       };
 
+      logger.debug("makeBooking", {
+        payload: payload,
+      });
+
       try {
         db.collection("booking").insertOne(payload);
         resolve(payload);
@@ -42,6 +46,10 @@ const repository = (container) => {
         description: paid.description,
       });
 
+      logger.debug("generateTicket", {
+        payload: payload,
+      });
+
       try {
         db.collection("tickets").insertOne(payload);
         resolve(payload);
@@ -57,6 +65,11 @@ const repository = (container) => {
     return new Promise((resolve, reject) => {
       const ObjectID = container.resolve("ObjectID");
       const query = { _id: new ObjectID(orderId) };
+
+      logger.debug("getOrderById", {
+        query: query,
+      });
+
       const response = (err, order) => {
         if (err) {
           reject(
@@ -70,7 +83,7 @@ const repository = (container) => {
   };
 
   const disconnect = () => {
-    logger.info("db.disconnect");
+    logger.info("repository disconnect");
     db.close();
   };
 

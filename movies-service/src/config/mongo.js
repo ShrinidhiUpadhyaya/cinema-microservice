@@ -8,17 +8,23 @@ const getMongoURL = (options) => {
     "mongodb://"
   );
 
+  logger.silly("getMongoURL", { url: url });
+
   return `${url.substr(0, url.length - 1)}/${options.db}`;
 };
 
 const getMongoAuthOptions = (options) => {
-  return {
+  const auth = {
     auth: {
       username: options.user,
       password: options.pass,
     },
     authSource: "admin",
   };
+
+  logger.silly("getMongoAuthOptions", { auth: auth });
+
+  return auth;
 };
 
 const connect = (options, mediator) => {
@@ -28,11 +34,9 @@ const connect = (options, mediator) => {
       getMongoAuthOptions(options)
     );
     logger.info("db.connect", {
-      values: {
-        options: options,
-        mongoURL: getMongoURL(options),
-        mongoAuthOptions: getMongoAuthOptions(options),
-      },
+      options: options,
+      mongoURL: getMongoURL(options),
+      mongoAuthOptions: getMongoAuthOptions(options),
     });
     client
       .connect()

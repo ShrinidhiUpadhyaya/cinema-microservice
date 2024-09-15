@@ -10,6 +10,7 @@ module.exports = (app, options) => {
     repo
       .getCinemasByCity(req.query.cityId)
       .then((cinemas) => {
+        logger.debug("getCinemasByCity successfull", { cinemas: cinemas });
         res.status(status.OK).json(cinemas);
       })
       .catch(next);
@@ -19,6 +20,7 @@ module.exports = (app, options) => {
     repo
       .getCinemaById(req.params.cinemaId)
       .then((cinema) => {
+        logger.debug("getCinemaById successfull", { cinema: cinema });
         res.status(status.OK).json(cinema);
       })
       .catch(next);
@@ -32,6 +34,9 @@ module.exports = (app, options) => {
     repo
       .getCinemaScheduleByMovie(params)
       .then((schedules) => {
+        logger.debug("getCinemaScheduleByMovie successfull", {
+          schedules: schedules,
+        });
         res.status(status.OK).json(schedules);
       })
       .catch(next);

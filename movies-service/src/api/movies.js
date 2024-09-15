@@ -11,6 +11,7 @@ module.exports = (app, options) => {
     repo
       .getAllMovies()
       .then((movies) => {
+        logger.debug("getAllMovies successfull", { movies: movies });
         res.status(status.OK).json(movies);
       })
       .catch(next);
@@ -20,6 +21,7 @@ module.exports = (app, options) => {
     repo
       .getMoviePremiers()
       .then((movies) => {
+        logger.debug("getMoviePremiers successfull", { movies: movies });
         res.status(status.OK).json(movies);
       })
       .catch(next);

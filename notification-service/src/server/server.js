@@ -9,6 +9,8 @@ const logger = getLogger();
 
 const start = (container) => {
   return new Promise((resolve, reject) => {
+    logger.silly("Entering server start");
+
     const { port } = container.resolve("serverSettings");
     const repo = container.resolve("repo");
 
@@ -46,6 +48,7 @@ const start = (container) => {
     api(app);
 
     const server = app.listen(port, () => resolve(server));
+    logger.silly("Exiting server start");
   });
 };
 

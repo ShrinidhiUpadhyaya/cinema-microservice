@@ -38,10 +38,13 @@ const repository = (container) => {
       };
 
       transporter.sendMail(mailOptions, (err, info) => {
+        logger.silly("Enetering sendMail", { mailOptions: mailOptions });
+
         if (err) {
           reject(new Error("An error occured sending an email, err:" + err));
         }
         transporter.close();
+        logger.silly("Exiting sendMail", { info: info });
         resolve(info);
       });
     });

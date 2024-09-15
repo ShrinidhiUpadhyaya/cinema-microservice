@@ -46,7 +46,7 @@ mediator.on("db.ready", (db) => {
 });
 
 mediator.on("db.error", (err) => {
-  console.error(err);
+  logger.error("db.error", { reason: err });
 });
 
 config.db.connect(config.dbSettings, mediator);

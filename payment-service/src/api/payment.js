@@ -10,6 +10,9 @@ module.exports = ({ repo }, app) => {
 
     validate(req.body.paymentOrder, "payment")
       .then((payment) => {
+        logger.debug("validation successfull", {
+          payment: payment,
+        });
         return repo.registerPurchase(payment);
       })
       .then((paid) => {
@@ -22,6 +25,9 @@ module.exports = ({ repo }, app) => {
     repo
       .getPurchaseById(req.params.id)
       .then((payment) => {
+        logger.debug("send payment", {
+          payment: payment,
+        });
         res.status(status.OK).json({ payment });
       })
       .catch(next);

@@ -12,6 +12,9 @@ const repository = (connection) => {
       const cinemas = [];
       const query = { city_id: cityId };
       const cursor = collection.find(query);
+
+      logger.debug("getCinemasByCity", { cursor: cursor });
+
       try {
         await cursor.forEach((movie) => {
           cinemas.push(movie);
@@ -28,6 +31,8 @@ const repository = (connection) => {
     return new Promise(async (resolve, reject) => {
       const query = { _id: new ObjectID(cinemaId) };
       const cinema = await collection.findOne(query);
+
+      logger.debug("getCinemaById", { cinema: cinema });
 
       try {
         resolve(cinema);
@@ -80,6 +85,13 @@ const repository = (connection) => {
         },
       ];
 
+      logger.debug("getCinemaScheduleByMovie", {
+        match: match,
+        group: group,
+        unwind: unwind,
+        group: group,
+      });
+
       try {
         const result = await collection
           .aggregate([match, project, ...unwind, ...group])
@@ -93,7 +105,7 @@ const repository = (connection) => {
   };
 
   const disconnect = () => {
-    logger.info("db.disconnect");
+    logger.info("repository disconnect");
     db.close();
   };
 
@@ -106,7 +118,7 @@ const repository = (connection) => {
 };
 
 const connect = (connection) => {
-  logger.info("repository connect");
+  logger.info("repository connect", { connection: connection });
 
   return new Promise((resolve, reject) => {
     if (!connection) {
