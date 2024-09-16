@@ -11,7 +11,7 @@ module.exports = (app, options) => {
         method: req?.method,
         api: req?.originalUrl,
       },
-      "Request"
+      "Request /movies"
     );
 
     repo
@@ -20,7 +20,31 @@ module.exports = (app, options) => {
         logger.debug({ movies: movies }, "getAllMovies successfull");
         res.status(status.OK).json(movies);
       })
-      .catch(next);
+      .catch((err) => {
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
+          },
+          "Error occured"
+        );
+        next(err);
+      });
   });
 
   app.get("/movies/premieres", (req, res, next) => {
@@ -29,7 +53,7 @@ module.exports = (app, options) => {
         method: req?.method,
         api: req?.originalUrl,
       },
-      "Request"
+      "Request /movies/premieres"
     );
     repo
       .getMoviePremiers()
@@ -37,7 +61,31 @@ module.exports = (app, options) => {
         logger.debug({ movies: movies }, "getMoviePremiers successfull");
         res.status(status.OK).json(movies);
       })
-      .catch(next);
+      .catch((err) => {
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
+          },
+          "Error occured"
+        );
+        next(err);
+      });
   });
 
   app.get("/movies/:id", (req, res, next) => {
@@ -49,7 +97,7 @@ module.exports = (app, options) => {
         api: req?.originalUrl,
         input: id,
       },
-      "Request"
+      "Request /movies/:id"
     );
     repo
       .getMovieById(id)
@@ -57,6 +105,30 @@ module.exports = (app, options) => {
         logger.debug({ movie: movie }, "getMovieById successfull");
         res.status(status.OK).json(movie);
       })
-      .catch(next);
+      .catch((err) => {
+        logger.debug(
+          {
+            reason: err?.message,
+            stackTrace: err?.stackTrace,
+            method: req?.method,
+            api: req?.originalUrl,
+            body: req?.body,
+            params: req?.params,
+            query: req?.query,
+            headers: req?.headers,
+            statusCode: res?.status,
+
+            user: {
+              ip: req?.ip,
+              userAgent: req?.get("User-Agent"),
+            },
+            performance: {
+              responseTime: res?.get("X-Response Time"),
+            },
+          },
+          "Error occured"
+        );
+        next(err);
+      });
   });
 };

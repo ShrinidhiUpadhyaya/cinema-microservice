@@ -16,7 +16,7 @@ module.exports = ({ repo }, app) => {
         input: paymentOrder,
         traceId: traceId,
       },
-      "Request"
+      "Request /payment/makePurchase"
     );
     validate(paymentOrder, "payment")
       .then((payment) => {
@@ -76,7 +76,7 @@ module.exports = ({ repo }, app) => {
         input: id,
         traceId: traceId,
       },
-      "Request"
+      "Request /payment/getPurchaseById/:id"
     );
 
     repo

@@ -14,7 +14,7 @@ module.exports = (app, options) => {
         api: req?.originalUrl,
         input: cityId,
       },
-      "Request"
+      "Request /cinemas"
     );
 
     repo
@@ -59,7 +59,7 @@ module.exports = (app, options) => {
         api: req?.originalUrl,
         input: cinemaId,
       },
-      "Request"
+      "Request /cinemas/:cinemaId"
     );
 
     repo
@@ -106,7 +106,7 @@ module.exports = (app, options) => {
         api: req?.originalUrl,
         input: params,
       },
-      "Request"
+      "Request /cinemas/:cityId/:movieId"
     );
 
     repo

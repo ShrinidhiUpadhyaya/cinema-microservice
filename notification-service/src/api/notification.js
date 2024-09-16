@@ -12,7 +12,7 @@ module.exports = ({ repo }, app) => {
         api: req?.originalUrl,
         traceId: traceId,
       },
-      "Request"
+      "Request /notification/sendEmail"
     );
 
     // ****Temporary
@@ -45,7 +45,7 @@ module.exports = ({ repo }, app) => {
         input: payload,
         traceId: traceId,
       },
-      "Request"
+      "Request /notification/sendSMS"
     );
 
     validate(payload, "notification")

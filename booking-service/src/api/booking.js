@@ -20,7 +20,7 @@ module.exports = ({ repo }, app) => {
         api: req?.originalUrl,
         traceId: traceId,
       },
-      "Request"
+      "Request /booking"
     );
 
     Promise.all([validate(user, "user"), validate(booking, "booking")])
@@ -133,7 +133,7 @@ module.exports = ({ repo }, app) => {
         input: orderId,
         traceId: traceId,
       },
-      "Request"
+      "Request /booking/verify/:orderId"
     );
 
     repo
