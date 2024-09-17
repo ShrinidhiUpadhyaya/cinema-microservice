@@ -43,6 +43,7 @@
     "awilix": "^2.2.2",
     "body-parser": "^1.16.0",
     "cors": "^2.8.1",
+    "elastic-apm-node": "^4.7.3",
     "express": "^4.14.0",
     "helmet": "^3.4.0",
     "http-status": "^0.2.5",

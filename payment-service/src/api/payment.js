@@ -1,35 +1,53 @@
 "use strict";
-
-require("../config/instrument");
+const apm = require("elastic-apm-node").start({
+  serviceName: "payment-service",
+  secretToken: "",
+  apiKey: "",
+  serverUrl: "http://apm-server:8200",
+  captureBody: "all",
+});
 
 const status = require("http-status");
-const { logger, errorLogger, init } = require("../config/logger");
 
 module.exports = ({ repo }, app) => {
-  init("payment-service");
-  app.use(logger);
-
   app.post("/payment/makePurchase", (req, res, next) => {
+    const transaction = apm.startTransaction("makePurchase", "request");
+
     const { validate } = req.container.cradle;
 
     validate(req.body.paymentOrder, "payment")
       .then((payment) => {
-        return repo.registerPurchase(payment);
+        const registerSpan = transaction.startSpan("registerPurchase", "db");
+        return repo.registerPurchase(payment).finally(() => {
+          registerSpan.end();
+        });
       })
       .then((paid) => {
         res.status(status.OK).json({ paid });
       })
-      .catch(next);
+      .catch((err) => {
+        apm.captureError(err);
+        next(err);
+      })
+      .finally(() => {
+        transaction.end();
+      });
   });
 
   app.get("/payment/getPurchaseById/:id", (req, res, next) => {
+    const transaction = apm.startTransaction("getPurchaseById", "request");
+
     repo
       .getPurchaseById(req.params.id)
       .then((payment) => {
         res.status(status.OK).json({ payment });
       })
-      .catch(next);
+      .catch((err) => {
+        apm.captureError(err);
+        next(err);
+      })
+      .finally(() => {
+        transaction.end();
+      });
   });
-
-  app.use(errorLogger);
 };

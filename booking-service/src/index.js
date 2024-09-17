@@ -1,10 +1,4 @@
 "use strict";
-require("elastic-apm-node").start({
-  serviceName: "",
-  secretToken: "",
-  apiKey: "",
-  serverUrl: "http://apm-server:8200",
-});
 
 const { EventEmitter } = require("events");
 const server = require("./server/server");

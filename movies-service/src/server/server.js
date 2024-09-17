@@ -26,12 +26,12 @@ const start = (options) => {
     api(app, options);
 
     // http
-    // const server = app.listen(options.port, () => resolve(server))
+    const server = app.listen(options.port, () => resolve(server));
 
     // https
-    const server = spdy
-      .createServer(options.ssl, app)
-      .listen(options.port, () => resolve(server));
+    // const server = spdy
+    //   .createServer(options.ssl, app)
+    //   .listen(options.port, () => resolve(server));
   });
 };
 
