@@ -17,23 +17,53 @@ We’ll use a simple NodeJS service with a MongoDB for our backend.
 - [Booking Service example](./booking-service)
 - [Payment Service example](./payment-service)
 - [Notification Service example](./notification-service)
-- [API Gateway Service example](./api-gateway)
+
+### Setting Up Elasticsearch, Logstash, and Kibana in Kubernetes
+
+We need to have docker and minikube installed previously.
+
+In the `_elk_setup` folder, run the below command.
+
+```
+$ ./apply-services.sh
+```
+```
+kubectl get pods
+```
+
+Ensure that all the services (Elasticsearch, Logstash, Kibana) are running properly.
+
+Once the services are up and running, you can access the Kibana dashboard via the generated link:
+```
+minikube service kibana
+```
+
+### Setting Up MongoDB
+
+
+In the `mongo-service` folder, run the below command.
+
+```
+$ kubectl apply -f monggo-deployment.yml
+```
+
+```
+kubectl get pods
+```
+
+Ensure that MongoDB service is running properly.
+
 
 ### How to run the cinema microservice
 
-We need to have docker installed previously.
+In the `_kubernetes_setup` folder, run the below command.
 
 ```
-$ bash < kraken.sh
+$ ./apply-services.sh
 ```
 
-This will basically install every microservice and setup the docker swarm cluster
+This will basically install every microservice and setup the kubernetes cluster
 
-and deploy every docker service in the swarm.
-
-To monitor the cluster in a graphic mode we can go and visit the following url: `http://192.168.99.100:9000`
-
-and this will give us the rancherOS web interface.
 
 ### Blog posts
 
