@@ -28,14 +28,18 @@ data:
       mutate {
         remove_field => [ "time" ]
       }
-    }
+
+      # Drop MongoDB Logs
+      if [log][file][path] =~ /\/var\/log\/mongodb\// {
+        drop { }
+      }
 
     output {
       elasticsearch {
         hosts => ["http://elasticsearch:9200"]
         user => "elastic"
         password => "changeme"
-        index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
+        index => "pino-cinema-microservice-logs-%{+YYYY.MM.dd}"
         codec => json_lines
         #-------------------------------- Enable compression --------------------------------
         #Values between 1 to 9. 0 will disable compression
