@@ -24,9 +24,18 @@ data:
         drop { }
       }
 
-       if [log][file][path] =~ /\/var\/log\/mongodb\// {
-        drop { }
+      date {
+        match => [ "timestamp", "ISO8601" ]
+        target => "@timestamp"
       }
+
+      mutate {
+        remove_field => [ "timestamp" ]
+      }
+
+      #if [log][file][path] =~ /\/var\/log\/mongodb\// {
+        #drop { }
+      #}
     }
 
 
