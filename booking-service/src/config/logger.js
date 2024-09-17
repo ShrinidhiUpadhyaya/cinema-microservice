@@ -28,6 +28,7 @@ const logger = pino(
       pid: process.pid,
       hostname: os.hostname(),
     },
+    timestamp: pino.stdTimeFunctions.isoTime,
   },
   transport
 );

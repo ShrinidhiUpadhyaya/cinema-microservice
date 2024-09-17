@@ -7,9 +7,6 @@ const mediator = new EventEmitter();
 const logger = require("./config/logger");
 const os = require("os");
 
-const now = new Date();
-now.setDate(now.getDate() + 1);
-
 logger.info("---- APPLICATION INIT ----");
 
 const handleShutdown = (err) => {
