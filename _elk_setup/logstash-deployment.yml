@@ -33,6 +33,7 @@ data:
       if [log][file][path] =~ /\/var\/log\/mongodb\// {
         drop { }
       }
+    }
 
     output {
       elasticsearch {
