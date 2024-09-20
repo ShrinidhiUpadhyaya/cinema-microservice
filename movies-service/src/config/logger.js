@@ -31,6 +31,42 @@ function initApplicationData(values) {
 function initLogRotationData(values) {
   if (values?.filename) {
     fileRotateTransport = new winston.transports.DailyRotateFile({ ...values });
+
+    fileRotateTransport?.on("error", (error) => {
+      logger.logger.warn("logFileRotation: Error", {
+        application: applicationData?.name,
+        reason: error,
+      });
+    });
+
+    fileRotateTransport?.on("new", (logFilename) => {
+      logger.logger.warn("logFileRotation: New", {
+        application: applicationData?.name,
+        filename: logFilename,
+      });
+    });
+
+    fileRotateTransport?.on("rotate", (oldFilename, newFilename) => {
+      logger.logger.warn("logFileRotation: Rotate", {
+        application: applicationData?.name,
+        oldFilename: oldFilename,
+        newFilename: newFilename,
+      });
+    });
+
+    fileRotateTransport?.on("archive", (zipLogFilename) => {
+      logger.logger.warn("logFileRotation: Archive", {
+        application: applicationData?.name,
+        zipLogFilename: zipLogFilename,
+      });
+    });
+
+    fileRotateTransport?.on("logRemoved", (removedLogFilename) => {
+      logger.logger.warn("logFileRotation: LogRemoved", {
+        application: applicationData?.name,
+        removedLogFilename: removedLogFilename,
+      });
+    });
   }
 }
 
@@ -136,12 +172,16 @@ const handleErrorSignals = () => {
 };
 
 const apiLogger = (req, res, next) => {
+  const start = Date.now();
+
   logger.logger.info(`${req.method} ${req.originalUrl}`, {
     category: "Request",
     application: applicationData?.name,
   });
 
   res.on("finish", () => {
+    const duration = Date.now() - start;
+
     if (res.statusCode === 200) {
       logger.logger.info(`${req.method} ${req.originalUrl}`, {
         category: "Success",
