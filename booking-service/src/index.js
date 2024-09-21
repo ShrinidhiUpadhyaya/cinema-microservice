@@ -49,7 +49,7 @@ const handleShutdown = (reason, isError = true) => {
       "---- Application Stopped Due to Error ----"
     );
   } else {
-    logger.info(
+    logger.error(
       {
         reason: reason,
         ...processInfo,
