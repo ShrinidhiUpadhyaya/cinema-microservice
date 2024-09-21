@@ -7,32 +7,72 @@ const mediator = new EventEmitter();
 const logger = require("./config/logger");
 const os = require("os");
 
-logger.info("---- APPLICATION INIT ----");
+const getProcessInfo = () => ({
+  type: os.type(),
+  cpuUsage: process.cpuUsage(),
+  memoryUsage: process.memoryUsage(),
+  loadAverage: os.loadavg(),
+  uptime: process.uptime(),
+});
 
-const handleShutdown = (err) => {
-  logger.fatal(
-    {
-      reason: err,
-      type: os?.type(),
-      cpuUsage: process?.cpuUsage(),
-      memoryUsage: process?.memoryUsage(),
-      loadAverage: os?.loadavg(),
-      uptime: process?.uptime(),
-    },
+logger.info(
+  {
+    ...getProcessInfo(),
+  },
+  "---- APPLICATION INIT ----"
+);
 
-    "Application Stopped"
-  );
+const serializeError = (err) => {
+  if (err instanceof Error) {
+    return {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      ...err,
+    };
+  }
+  return err;
 };
 
-process.on("SIGINT", handleShutdown);
-process.on("SIGTERM", handleShutdown);
-process.on("SIGSEGV", handleShutdown);
-process.on("SIGILL", handleShutdown);
-process.on("SIGABRT", handleShutdown);
-process.on("SIGFPE", handleShutdown);
+const signals = ["SIGINT", "SIGTERM", "SIGSEGV", "SIGILL", "SIGABRT", "SIGFPE"];
 
-process.on("uncaughtRejection", handleShutdown);
-process.on("uncaughtException", handleShutdown);
+const handleShutdown = (reason, isError = true) => {
+  const processInfo = getProcessInfo();
+
+  if (isError) {
+    const errorInfo = serializeError(reason);
+    logger.error(
+      {
+        reason: errorInfo,
+        ...processInfo,
+      },
+      "---- Application Stopped Due to Error ----"
+    );
+  } else {
+    logger.info(
+      {
+        reason: reason,
+        ...processInfo,
+      },
+      "---- Application Shutdown ----"
+    );
+  }
+  process.exit(isError ? 1 : 0);
+};
+
+process.on("uncaughtException", (error) => {
+  handleShutdown(error, true);
+});
+
+process.on("unhandledRejection", (reason) => {
+  handleShutdown(reason, true);
+});
+
+signals.forEach((signal) => {
+  process.on(signal, () => {
+    handleShutdown(`Received ${signal} signal`, false);
+  });
+});
 
 mediator.on("di.ready", (container) => {
   repository
