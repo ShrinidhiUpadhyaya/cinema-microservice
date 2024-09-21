@@ -30,7 +30,6 @@ spec:
         image: payment-service:v1.0.1
         ports:
         - containerPort: 3001
-        imagePullPolicy: Never
         env:
         - name: DB_SERVERS
           value: "mongodb-service:27017"
