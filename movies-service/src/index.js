@@ -7,7 +7,20 @@ const mediator = new EventEmitter();
 const logger = require("./config/logger");
 const os = require("os");
 
-logger.info("---- APPLICATION INIT ----");
+const getProcessInfo = () => ({
+  type: os.type(),
+  cpuUsage: process.cpuUsage(),
+  memoryUsage: process.memoryUsage(),
+  loadAverage: os.loadavg(),
+  uptime: process.uptime(),
+});
+
+logger.info(
+  {
+    ...getProcessInfo(),
+  },
+  "---- APPLICATION INIT ----"
+);
 
 const serializeError = (err) => {
   if (err instanceof Error) {
@@ -20,14 +33,6 @@ const serializeError = (err) => {
   }
   return err;
 };
-
-const getProcessInfo = () => ({
-  type: os.type(),
-  cpuUsage: process.cpuUsage(),
-  memoryUsage: process.memoryUsage(),
-  loadAverage: os.loadavg(),
-  uptime: process.uptime(),
-});
 
 const signals = ["SIGINT", "SIGTERM", "SIGSEGV", "SIGILL", "SIGABRT", "SIGFPE"];
 
