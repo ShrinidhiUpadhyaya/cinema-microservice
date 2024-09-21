@@ -104,7 +104,6 @@ const init = ({ applicationData, logRotationData }) => {
     initLogRotationData(logRotationData);
     initLogger();
     logStart();
-    handleErrorSignals();
     return 0;
   } catch (err) {
     console.error("Logger initialization failed:", err);
@@ -132,44 +131,63 @@ const logShutdown = (signal) => {
   });
 };
 
-const handleErrorSignals = () => {
-  const signals = [
-    "SIGINT",
-    "SIGTERM",
-    "SIGSEGV",
-    "SIGILL",
-    "SIGABRT",
-    "SIGFPE",
-  ];
-
-  signals.forEach((signal) => {
-    process.on(signal, () => logShutdown(signal));
-  });
-
-  process.on("uncaughtException", (error) => {
-    logger.logger.error("Exception", {
-      application: applicationData?.name,
-      category: "Exception",
-      reason: error,
-    });
-  });
-
-  process.on("unhandledRejection", (reason) => {
-    logger.logger.error(`Rejection`, {
-      application: applicationData?.name,
-      category: "Rejection",
-      reason: reason,
-    });
-  });
-
-  process.on("warning", (warning) => {
-    logger.logger.warn(`${warning.name}: ${warning.message}`, {
-      application: applicationData?.name,
-      category: "Warning",
-      stack: warning.stack,
-    });
-  });
+const serializeError = (err) => {
+  if (err instanceof Error) {
+    return {
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+      ...err,
+    };
+  }
+  return err;
 };
+
+const signals = ["SIGINT", "SIGTERM", "SIGSEGV", "SIGILL", "SIGABRT", "SIGFPE"];
+
+const handleShutdown = (reason, isError = true) => {
+  if (isError) {
+    const errorInfo = serializeError(reason);
+    logger.logger.error(
+      {
+        reason: errorInfo,
+        metrics: metrics,
+      },
+      "---- Application Stopped Due to Error ----"
+    );
+  } else {
+    logger.logger.error(
+      {
+        reason: reason,
+        metrics: metrics,
+      },
+      "---- Application Shutdown ----"
+    );
+  }
+  process.exit(isError ? 1 : 0);
+};
+
+process.on("uncaughtException", (error) => {
+  handleShutdown(error, true);
+});
+
+process.on("unhandledRejection", (reason) => {
+  handleShutdown(reason, true);
+});
+
+process.on("warning", (warning) => {
+  logger.logger.warn(`${warning.name}: ${warning.message}`, {
+    application: applicationData?.name,
+    category: "Warning",
+    stack: warning.stack,
+  });
+});
+
+signals.forEach((signal) => {
+  process.on(signal, () => {
+    handleShutdown(`Received ${signal} signal`, false);
+  });
+});
 
 const apiLogger = (req, res, next) => {
   const start = Date.now();
