@@ -1,6 +1,8 @@
 const os = require("os");
 const process = require("process");
 const winston = require("winston");
+const networkInterfaces = os.networkInterfaces();
+
 require("winston-daily-rotate-file");
 
 let applicationData = {};
@@ -83,7 +85,20 @@ function getTransport() {
   }
 }
 
+function getLocalIpAddress() {
+  for (const interfaceDetails of Object.values(networkInterfaces)) {
+    for (const details of interfaceDetails) {
+      if (details.family === "IPv4" && !details.internal) {
+        return details.address;
+      }
+    }
+  }
+  return "127.0.0.1";
+}
+
 function initLogger() {
+  const ipAddress = getLocalIpAddress();
+
   logger.logger = winston.createLogger({
     level: applicationData.level ?? "silly",
     format: winston.format.combine(
@@ -93,6 +108,7 @@ function initLogger() {
     defaultMeta: {
       application: applicationData.name,
       system: os.hostname(),
+      client_ip: ipAddress,
     },
     transports: getTransport(),
   });
