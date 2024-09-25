@@ -217,7 +217,7 @@ const apiLogger = (req, res, next) => {
 };
 
 const apiErrorLogger = (err, req, res, next) => {
-  logger.logger.debug(`${req.method} ${req.originalUrl}`, {
+  logger.logger.error(`${req.method} ${req.originalUrl}`, {
     category: "Error",
     application: applicationData?.name,
     reason: err.message,
