@@ -21,7 +21,7 @@ module.exports = (app, options) => {
         res.status(status.OK).json(movies);
       })
       .catch((err) => {
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,
@@ -62,7 +62,7 @@ module.exports = (app, options) => {
         res.status(status.OK).json(movies);
       })
       .catch((err) => {
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,
@@ -106,7 +106,7 @@ module.exports = (app, options) => {
         res.status(status.OK).json(movie);
       })
       .catch((err) => {
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,

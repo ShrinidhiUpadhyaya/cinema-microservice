@@ -41,7 +41,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json({ paid });
       })
       .catch((err) => {
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,
@@ -93,7 +93,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json({ payment });
       })
       .catch((err) => {
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,

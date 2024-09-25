@@ -63,7 +63,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json({ msg: "ok" });
       })
       .catch((err) => {
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,

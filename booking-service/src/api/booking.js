@@ -94,8 +94,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json(ticket);
       })
       .catch((err) => {
-        // Exception Logging, Not all errors should be logged with error
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,
@@ -143,7 +142,7 @@ module.exports = ({ repo }, app) => {
         res.status(status.OK).json(order);
       })
       .catch((err) => {
-        logger.debug(
+        logger.error(
           {
             reason: err?.message,
             stackTrace: err?.stackTrace,
