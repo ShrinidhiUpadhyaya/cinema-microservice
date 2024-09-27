@@ -117,17 +117,7 @@ const logStart = () => {
     description: applicationData?.description,
     metadata: applicationData?.metadata,
     metrics: metrics,
-  });
-};
-
-const logShutdown = (signal) => {
-  logger.logger.error("Application Shutdown", {
-    application: applicationData?.name,
-    description: applicationData?.description,
-    metadata: applicationData?.metadata,
-    metrics: metrics,
-    reason: signal,
-    category: "Shutdown",
+    category: "Start",
   });
 };
 
@@ -148,21 +138,23 @@ const signals = ["SIGINT", "SIGTERM", "SIGSEGV", "SIGILL", "SIGABRT", "SIGFPE"];
 const handleShutdown = (reason, isError = true) => {
   if (isError) {
     const errorInfo = serializeError(reason);
-    logger.logger.error(
-      {
-        reason: errorInfo,
-        metrics: metrics,
-      },
-      "---- Application Stopped Due to Error ----"
-    );
+    logger.logger.error("---- Application Stopped Due to Error ----", {
+      application: applicationData?.name,
+      description: applicationData?.description,
+      metadata: applicationData?.metadata,
+      reason: errorInfo,
+      metrics: metrics,
+      category: "Shutdown",
+    });
   } else {
-    logger.logger.error(
-      {
-        reason: reason,
-        metrics: metrics,
-      },
-      "---- Application Shutdown ----"
-    );
+    logger.logger.error("---- Application Shutdown ----", {
+      application: applicationData?.name,
+      description: applicationData?.description,
+      metadata: applicationData?.metadata,
+      reason: reason,
+      metrics: metrics,
+      category: "Shutdown",
+    });
   }
   process.exit(isError ? 1 : 0);
 };
