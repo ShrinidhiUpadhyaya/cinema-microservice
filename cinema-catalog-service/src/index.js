@@ -77,7 +77,7 @@ signals.forEach((signal) => {
 mediator.on("db.ready", (db) => {
   let rep;
   repository
-    .connect({ db, ObjectID: config.ObjectID })
+    .connect({ db, ObjectId: config.ObjectId })
     .then((repo) => {
       rep = repo;
 
@@ -85,7 +85,7 @@ mediator.on("db.ready", (db) => {
         {
           port: config?.serverSettings?.port,
           ssl: config?.serverSettings?.ssl,
-          ObjectID: config?.ObjectID,
+          ObjectId: config?.ObjectId,
         },
         "configuration settings"
       );

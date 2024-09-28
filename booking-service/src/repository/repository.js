@@ -68,8 +68,8 @@ const repository = (container) => {
 
   const getOrderById = (orderId) => {
     return new Promise((resolve, reject) => {
-      const ObjectID = container.resolve("ObjectID");
-      const query = { _id: new ObjectID(orderId) };
+      const ObjectId = container.resolve("ObjectId");
+      const query = { _id: new ObjectId(orderId) };
 
       logger.debug(
         {

@@ -9,7 +9,6 @@ module.exports = ({ repo }, app) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         traceId: traceId,
       },
       "Request /notification/sendEmail"
@@ -41,7 +40,6 @@ module.exports = ({ repo }, app) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         input: payload,
         traceId: traceId,
       },
@@ -80,7 +78,7 @@ module.exports = ({ repo }, app) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /notification/sendSMS"
         );
         next(err);
       });

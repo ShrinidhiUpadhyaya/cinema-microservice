@@ -11,7 +11,6 @@ module.exports = (app, options) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         input: cityId,
       },
       "Request /cinemas"
@@ -29,7 +28,6 @@ module.exports = (app, options) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -43,7 +41,7 @@ module.exports = (app, options) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /cinemas"
         );
 
         next(err);
@@ -56,7 +54,6 @@ module.exports = (app, options) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         input: cinemaId,
       },
       "Request /cinemas/:cinemaId"
@@ -74,7 +71,6 @@ module.exports = (app, options) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -88,7 +84,7 @@ module.exports = (app, options) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /cinemas/:cinemaId"
         );
         next(err);
       });
@@ -103,7 +99,6 @@ module.exports = (app, options) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         input: params,
       },
       "Request /cinemas/:cityId/:movieId"
@@ -124,7 +119,6 @@ module.exports = (app, options) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -138,7 +132,7 @@ module.exports = (app, options) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /cinemas/:cityId/:movieId"
         );
 
         next(err);

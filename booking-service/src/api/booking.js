@@ -17,7 +17,6 @@ module.exports = ({ repo }, app) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         traceId: traceId,
       },
       "Request /booking"
@@ -99,7 +98,6 @@ module.exports = ({ repo }, app) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -113,7 +111,7 @@ module.exports = ({ repo }, app) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /booking"
         );
         next(err);
       });
@@ -128,7 +126,6 @@ module.exports = ({ repo }, app) => {
     logger.info(
       {
         method: req?.method,
-        api: "/booking/verify/:orderId",
         input: orderId,
         traceId: traceId,
       },
@@ -147,13 +144,11 @@ module.exports = ({ repo }, app) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
             headers: req?.headers,
             statusCode: res?.status,
-
             user: {
               ip: req?.ip,
               userAgent: req?.get("User-Agent"),
@@ -162,7 +157,7 @@ module.exports = ({ repo }, app) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /booking/verify/:orderId"
         );
         next(err);
       });

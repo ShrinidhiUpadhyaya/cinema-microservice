@@ -2,7 +2,7 @@
 const logger = require("../config/logger");
 
 const repository = (connection) => {
-  const { db, ObjectID } = connection;
+  const { db, ObjectId } = connection;
 
   const collection = db.collection("cinemas");
 
@@ -28,7 +28,7 @@ const repository = (connection) => {
 
   const getCinemaById = (cinemaId) => {
     return new Promise(async (resolve, reject) => {
-      const query = { _id: new ObjectID(cinemaId) };
+      const query = { _id: new ObjectId(cinemaId) };
       const cinema = await collection.findOne(query);
 
       logger.debug({ cinema: cinema }, "getCinemaById");

@@ -12,7 +12,6 @@ module.exports = ({ repo }, app) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         input: paymentOrder,
         traceId: traceId,
       },
@@ -59,7 +58,7 @@ module.exports = ({ repo }, app) => {
             },
             traceId: traceId,
           },
-          "Error occured"
+          "Error occured /payment/makePurchase"
         );
         next(err);
       });
@@ -72,7 +71,6 @@ module.exports = ({ repo }, app) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         input: id,
         traceId: traceId,
       },
@@ -98,7 +96,6 @@ module.exports = ({ repo }, app) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -113,7 +110,7 @@ module.exports = ({ repo }, app) => {
             },
             traceId: traceId,
           },
-          "Error occured"
+          "Error occured /payment/getPurchaseById/:id"
         );
         next(err);
       });

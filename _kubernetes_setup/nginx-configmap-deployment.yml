@@ -30,6 +30,8 @@ data:
 
       server {
         listen 80;
+
+        # Booking service routes
         location /booking {
           proxy_pass http://booking-service;
           proxy_set_header Host $host;
@@ -38,6 +40,15 @@ data:
           proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        location /booking/verify/:orderId {
+          proxy_pass http://booking-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Payment service routes
         location /payment/makePurchase {
           proxy_pass http://payment-service;
           proxy_set_header Host $host;
@@ -46,6 +57,15 @@ data:
           proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        location /payment/getPurchaseById {
+          proxy_pass http://payment-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Notification service routes
         location /notification/sendEmail {
           proxy_pass http://notification-service;
           proxy_set_header Host $host;
@@ -54,6 +74,15 @@ data:
           proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        location /notification/sendSMS {
+          proxy_pass http://notification-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Catalog service routes
         location /cinemas {
           proxy_pass http://catalog-service;
           proxy_set_header Host $host;
@@ -62,7 +91,40 @@ data:
           proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        location /cinemas/:cinemaId {
+          proxy_pass http://catalog-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /cinemas/:cityId/:movieId {
+          proxy_pass http://catalog-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Movies service routes
         location /movies {
+          proxy_pass http://movies-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /movies/premieres {
+          proxy_pass http://movies-service;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /movies/:id {
           proxy_pass http://movies-service;
           proxy_set_header Host $host;
           proxy_set_header X-Real-IP $remote_addr;

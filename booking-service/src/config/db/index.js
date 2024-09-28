@@ -1,4 +1,4 @@
-const { ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const { connect } = require("./mongo");
 
-module.exports = Object.assign({}, { connect, ObjectID });
+module.exports = Object.assign({}, { connect, ObjectId });

@@ -19,7 +19,7 @@ function initDI(
         booking: asValue(models.booking),
         user: asValue(models.user),
         ticket: asValue(models.ticket),
-        ObjectID: asValue(database.ObjectID),
+        ObjectId: asValue(database.ObjectId),
         serverSettings: asValue(serverSettings),
         paymentService: asValue(services.paymentService),
         notificationService: asValue(services.notificationService),

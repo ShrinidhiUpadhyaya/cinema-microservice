@@ -9,7 +9,6 @@ module.exports = (app, options) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
       },
       "Request /movies"
     );
@@ -26,7 +25,6 @@ module.exports = (app, options) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -41,7 +39,7 @@ module.exports = (app, options) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /movies"
         );
         next(err);
       });
@@ -51,7 +49,6 @@ module.exports = (app, options) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
       },
       "Request /movies/premieres"
     );
@@ -67,7 +64,6 @@ module.exports = (app, options) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -82,7 +78,7 @@ module.exports = (app, options) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /movies/premieres"
         );
         next(err);
       });
@@ -94,7 +90,6 @@ module.exports = (app, options) => {
     logger.info(
       {
         method: req?.method,
-        api: req?.originalUrl,
         input: id,
       },
       "Request /movies/:id"
@@ -111,7 +106,6 @@ module.exports = (app, options) => {
             reason: err?.message,
             stackTrace: err?.stackTrace,
             method: req?.method,
-            api: req?.originalUrl,
             body: req?.body,
             params: req?.params,
             query: req?.query,
@@ -126,7 +120,7 @@ module.exports = (app, options) => {
               responseTime: res?.get("X-Response Time"),
             },
           },
-          "Error occured"
+          "Error occured /movies/:id"
         );
         next(err);
       });

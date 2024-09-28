@@ -17,7 +17,7 @@ function initDI(
       container.register({
         database: asValue(db),
         validate: asValue(models.validate),
-        ObjectID: asValue(database.ObjectID),
+        ObjectId: asValue(database.ObjectId),
         serverSettings: asValue(serverSettings),
         stripe: asValue(stripe(stripeSettings.secret)),
       });
