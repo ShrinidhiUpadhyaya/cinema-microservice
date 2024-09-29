@@ -15,13 +15,6 @@ const getProcessInfo = () => ({
   uptime: process.uptime(),
 });
 
-logger.info(
-  {
-    ...getProcessInfo(),
-  },
-  "---- APPLICATION INIT ----"
-);
-
 const serializeError = (err) => {
   if (err instanceof Error) {
     return {
@@ -73,6 +66,13 @@ signals.forEach((signal) => {
     handleShutdown(`Received ${signal} signal`, false);
   });
 });
+
+logger.info(
+  {
+    ...getProcessInfo(),
+  },
+  "---- APPLICATION INIT ----"
+);
 
 mediator.on("di.ready", (container) => {
   repository
