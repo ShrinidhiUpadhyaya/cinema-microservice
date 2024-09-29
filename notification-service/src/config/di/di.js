@@ -1,12 +1,11 @@
 const { createContainer, asValue } = require("awilix");
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
-const { getLogger } = require("../logger");
-const logger = getLogger();
+const logger = require("../logger");
 
 function initDI({ serverSettings, models, smtpSettings }, mediator) {
   mediator.once("init", () => {
-    logger.silly("initDI: init");
+    logger.trace("initDI: init");
 
     const container = createContainer();
 
@@ -18,15 +17,16 @@ function initDI({ serverSettings, models, smtpSettings }, mediator) {
       smtpTransport: asValue(smtpTransport),
     });
 
-    logger.info("configuration settings", {
-      validate: models.validate,
-      serverSettings: serverSettings,
-      smtpSettings: smtpSettings,
-      nodemailer: nodemailer,
-      smtpTransport: smtpTransport,
-    });
+    logger.info(
+      {
+        serverSettings: serverSettings,
+        models: models,
+        smtpSettings: smtpSettings,
+      },
+      "configuration settings"
+    );
 
-    logger.silly("initDI: emit di.ready");
+    logger.trace("initDI: emit di.ready");
 
     mediator.emit("di.ready", container);
   });

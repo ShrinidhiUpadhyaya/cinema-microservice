@@ -24,9 +24,19 @@ data:
         drop { }
       }
 
+      if [msg] {
+        mutate {
+          rename => { "msg" => "message" }
+        }
+      }
+
       date {
         match => [ "timestamp", "ISO8601" ]
         target => "@timestamp"
+      }
+
+      ruby {
+        code => "event.set('timestamp_in_european_timezone', event.get('@timestamp').time.localtime('+02:00'))"
       }
 
       mutate {
@@ -44,7 +54,7 @@ data:
         hosts => ["http://elasticsearch:9200"]
         user => "elastic"
         password => "changeme"
-        index => "winston-cinema-microservice-logs-%{+YYYY.MM.dd}"
+        index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
         codec => json
       }
       stdout { codec => rubydebug }

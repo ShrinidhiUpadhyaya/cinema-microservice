@@ -1,6 +1,5 @@
 "use strict";
-const { getLogger } = require("../config/logger");
-const logger = getLogger();
+const logger = require("../config/logger");
 
 const repository = (container) => {
   const sendEmail = (payload) => {
@@ -38,13 +37,12 @@ const repository = (container) => {
       };
 
       transporter.sendMail(mailOptions, (err, info) => {
-        logger.silly("Enetering sendMail", { mailOptions: mailOptions });
-
+        logger.trace({ mailOptions: mailOptions }, "Enetering sendMail");
         if (err) {
           reject(new Error("An error occured sending an email, err:" + err));
         }
         transporter.close();
-        logger.silly("Exiting sendMail", { info: info });
+        logger.trace({ info: info }, "Exiting sendMail");
         resolve(info);
       });
     });
