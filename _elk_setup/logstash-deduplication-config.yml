@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-config
+data:
+  logstash.conf: |
+    input {
+      tcp {
+        port => 5044
+        codec => json
+      }
+    }
+
+    filter {
+      json {
+        source => "message"
+      }
+
+      # Fingerprint filter to generate a unique ID for each log message
+      fingerprint {
+        source => ["msg"]
+        target => "[@metadata][fingerprint]"
+        method => "MD5"
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["http://elasticsearch:9200"]
+        user => "elastic"
+        password => "changeme"
+        index => "cinema-microservice-logs-%{+YYYY.MM.dd}"
+        document_id => "%{[@metadata][fingerprint]}"
+      }
+      stdout { codec => rubydebug }
+    }
+  logstash.yml: |
+    http.host: 0.0.0.0
+    node.name: logstash

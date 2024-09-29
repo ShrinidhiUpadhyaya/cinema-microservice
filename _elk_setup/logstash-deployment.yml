@@ -29,13 +29,24 @@ data:
         target => "@timestamp"
       }
 
+      ruby {
+        code => "
+          european_time = event.get('@timestamp').time + (2 * 3600)  # 2 hours in seconds
+          event.set('timestamp_in_european_timezone', european_time)
+        "
+      }
+
       mutate {
         remove_field => [ "timestamp" ]
       }
 
-      #if [log][file][path] =~ /\/var\/log\/mongodb\// {
-        #drop { }
-      #}
+      if [log][file][path] =~ /\/var\/log\/mongodb\// {
+        drop { }
+      }
+
+      if [log][file][path] =~ /\/var\/log\/(kube-system|docker|system|containers|syslog|dmesg)\// {
+        drop { }
+      }
     }
 
 
