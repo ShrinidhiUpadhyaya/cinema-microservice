@@ -6,9 +6,9 @@ This is the repo example for the article.
 
 ### Stack
 We’ll use a simple NodeJS service with a MongoDB for our backend.
-- NodeJS 7.5.0
+- NodeJS 20.9.0
 - MongoDB 3.4.2
-- Docker for Mac 1.13.0
+- Docker for Wind 4.8.2
 
 ### Microservices
 
@@ -33,7 +33,15 @@ kubectl get pods
 
 Ensure that all the services (Elasticsearch, Logstash, Kibana) are running properly.
 
-Once the services are up and running, you can access the Kibana dashboard via the generated link:
+Once the services are up and running, you can set the passwords for elasticsearch users:
+```
+kubectl exec -it <elasticsearch-pod-name> -- /bin/bash
+cd bin
+elasticsearch-setup-password interactive
+```
+After that enter passwords for all the elasticsearch users, set it to "changeme", if you set it something else, make sure you set the same in the deployments.
+
+Next, you can access the Kibana dashboard via the generated link:
 ```
 minikube service kibana
 ```
