@@ -6,9 +6,9 @@ This is the repo example for the article.
 
 ### Stack
 We’ll use a simple NodeJS service with a MongoDB for our backend.
-- NodeJS 7.5.0
-- MongoDB 3.4.2
-- Docker for Mac 1.13.0
+- NodeJS 20.9.0
+- MongoDB latest
+- Docker for Wind 4.8.2
 
 ### Microservices
 
@@ -17,23 +17,61 @@ We’ll use a simple NodeJS service with a MongoDB for our backend.
 - [Booking Service example](./booking-service)
 - [Payment Service example](./payment-service)
 - [Notification Service example](./notification-service)
-- [API Gateway Service example](./api-gateway)
+
+### Setting Up Elasticsearch, Logstash, and Kibana in Kubernetes
+
+We need to have docker and minikube installed previously.
+
+In the `_elk_setup` folder, run the below command.
+
+```
+$ ./apply-services.sh
+```
+```
+kubectl get pods
+```
+
+Ensure that all the services (Elasticsearch, Logstash, Kibana) are running properly.
+
+Once the services are up and running, you can set the passwords for elasticsearch users:
+```
+kubectl exec -it <elasticsearch-pod-name> -- /bin/bash
+cd bin
+elasticsearch-setup-password interactive
+```
+After that enter passwords for all the elasticsearch users, set it to "changeme", if you set it something else, make sure you set the same in the deployments.
+
+Next, you can access the Kibana dashboard via the generated link:
+```
+minikube service kibana
+```
+
+### Setting Up MongoDB
+
+
+In the `mongo-service` folder, run the below command.
+
+```
+$ kubectl apply -f monggo-deployment.yml
+```
+
+```
+kubectl get pods
+```
+
+Ensure that MongoDB service is running properly.
+
 
 ### How to run the cinema microservice
 
-We need to have docker installed previously.
+In the `_kubernetes_setup` folder, run the below command.
 
 ```
-$ bash < kraken.sh
+$ ./apply-services.sh
 ```
 
-This will basically install every microservice and setup the docker swarm cluster
+This will basically install every microservice and setup the kubernetes cluster
 
-and deploy every docker service in the swarm.
-
-To monitor the cluster in a graphic mode we can go and visit the following url: `http://192.168.99.100:9000`
-
-and this will give us the rancherOS web interface.
 
 ### Blog posts
 
