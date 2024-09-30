@@ -7,7 +7,7 @@ This is the repo example for the article.
 ### Stack
 We’ll use a simple NodeJS service with a MongoDB for our backend.
 - NodeJS 20.9.0
-- MongoDB 3.4.2
+- MongoDB latest
 - Docker for Wind 4.8.2
 
 ### Microservices
