@@ -52,7 +52,7 @@ minikube service kibana
 In the `mongo-service` folder, run the below command.
 
 ```
-$ kubectl apply -f monggo-deployment.yml
+$ kubectl apply -f mongo-deployment.yml
 ```
 
 ```
